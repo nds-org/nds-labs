@@ -11,7 +11,7 @@ MAINTAINER Kacper Kowalik "xarthius.kk@gmail.com"
 
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update -qq && \
-    apt-get install -qy curl sudo python-dev python-pip git-core docker.io && \
+    apt-get install -qy curl sudo python-dev python-pip git-core docker.io libfuse-dev libssl-dev && \
     apt-get clean
 
 
@@ -22,6 +22,10 @@ RUN useradd -D --shell=/bin/bash && \
     adduser user sudo && \
     gpasswd -a user docker && \
     sudo -u user mkdir /home/user/yt_serve
+
+# install irods client
+ADD irods-fuse.sh /tmp/irods-fuse.sh
+RUN bash /tmp/irods-fuse.sh
 
 # supervisor process manager
 RUN pip install supervisor
