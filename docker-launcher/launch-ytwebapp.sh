@@ -1,7 +1,7 @@
 #!/bin/bash
 RABBIT_HOST=rabbit
-RABBIT_IMAGE=rabbit:latest
-CELERY_IMAGE=ytwebapp:latest
+RABBIT_IMAGE=ndslabs/rabbitmq-server:latest
+CELERY_IMAGE=ndslabs/ythub_worker:latest
 
 RABBIT_CID=$(docker run -d --name $RABBIT_HOST $RABBIT_IMAGE)
 RABBIT_AUTH=$(docker logs ${RABBIT_CID} | awk '/curl/ {print $3}')
