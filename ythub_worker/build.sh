@@ -17,4 +17,4 @@ popd &> /dev/null
 mv rest2 app
 popd &> /dev/null
 
-docker build -t ytwebapp:latest .
+docker build -t ndslabs/ythub_worker:latest .
