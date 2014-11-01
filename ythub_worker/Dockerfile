@@ -10,6 +10,7 @@ FROM debian:sid
 MAINTAINER Kacper Kowalik "xarthius.kk@gmail.com"
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV IRODS_DATADIR /tempZone/home/rods/data
 RUN apt-get update -qq && \
     apt-get install -qy curl sudo python-dev python-pip git-core docker.io libfuse-dev libssl-dev && \
     apt-get clean
