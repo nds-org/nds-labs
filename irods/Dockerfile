@@ -1,11 +1,12 @@
 FROM ubuntu:14.04
 MAINTAINER matthewturk@gmail.com
-VOLUME ["/var/lib/irods/Vault"]
+VOLUME ["/var/lib/irods/Vault", "/mnt/data"]
 ENV irodszone tempZone
 ENV localzonesid TEMP_LOCAL_ZONE_SID
 ENV keyforagent temp_32_byte_key_for_agent__conn
 ENV dbhost db1
 ENV irodspassword testpassword
+ENV ytfidopassword 3nthr0py
 
 
 RUN apt-get update
