@@ -2,9 +2,9 @@
 
 nova boot \
 --user-data ./coreos-config.yaml \
---image 85d57540-448c-4256-9d85-5147723d95f7 \
---key-name core \
---flavor m1.medium \
+--image 3a03810f-2ede-4f9e-8766-3b574388b2df \
+--key-name bb \
+--flavor 3 \
 --num-instances 3 \
 --security-groups default coreos \
 --config-drive=true \
