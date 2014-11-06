@@ -1,0 +1,17 @@
+[Unit]
+Description=irods-icat
+BindsTo=postgres-icat.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill icat1
+ExecStartPre=-/usr/bin/docker rm icat1
+ExecStartPre=/usr/bin/docker pull ndslabs/irods-icat
+ExecStart=/usr/bin/docker run --name icat1 --link db1:db1 -v /mnt/data:/mnt/data -p 1247 ndslabs/irods-icat
+ExecStop=/usr/bin/docker stop icat1
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+X-ConditionMachineOf=postgres-icat.service

@@ -1,0 +1,22 @@
+[Unit]
+Description=ytwebapp.service
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+ExecStartPre=-/usr/bin/docker rm celery
+ExecStartPre=/usr/bin/docker pull ndslabs/ythub_worker
+ExecStart=/usr/bin/docker run -v /var/lib/docker:/var/lib/docker --privileged -p 8888 --name=celery \
+   -e ytfidopassword=${ytfidopassword} \
+   -e COREOS_PUBLIC_IPV4=${COREOS_PRIVATE_IPV4} \
+   -e ICAT_CPORT=${ICAT_CPORT} \
+   -e irodszone=${irodszone} \
+   -e IRODS_DATADIR=${IRODS_DATADIR} \
+   ndslabs/ythub_worker
+ExecStop=/usr/bin/docker kill celery
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+#X-ConditionMachineOf=postgres-icat.service
