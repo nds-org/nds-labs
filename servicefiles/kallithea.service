@@ -1,0 +1,12 @@
+[Unit]
+Description=Kallithea
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill kallithea
+ExecStartPre=-/usr/bin/docker rm kallithea
+ExecStartPre=/usr/bin/docker pull ndslabs/kallithea
+ExecStart=/usr/bin/docker run --name kallithea -p 5000:5000 ndslabs/kallithea
+ExecStop=/usr/bin/docker stop kallithea
