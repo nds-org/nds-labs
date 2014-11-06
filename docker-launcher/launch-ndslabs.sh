@@ -6,9 +6,9 @@ IRODS_DATADIR=/${irodszone}/home/rods/data
 #source launch-kallithea.sh
 echo "Launching postgres-icat"
 source launch-postgres-icat.sh
-echo "Launching ytwebapp"
-source launch-ytwebapp.sh
-echo "Waiting ..."
+echo "Waiting 20 seconds ..."
 sleep 20
 echo "Launching iRODS"
 source launch-irods-icat.sh
+echo "Launching ytwebapp"
+source launch-ytwebapp.sh
