@@ -1,5 +1,5 @@
 [Unit]
-Description=ytwebapp.service
+Description=ytwebapp
 
 [Service]
 TimeoutStartSec=0
@@ -19,4 +19,4 @@ ExecStop=/usr/bin/docker kill celery
 WantedBy=multi-user.target
 
 [X-Fleet]
-#X-ConditionMachineOf=postgres-icat.service
+Conflicts=ytwebapp@*.service
