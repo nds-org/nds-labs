@@ -50,21 +50,20 @@ for public, n in [(False, tot - npublic), (True, npublic)]:
     else:
         ip_info = "elastic_ip=false"
     with open('cloud-config_%s.yaml' % public, 'w') as fh:
-        etcd_token = etcd_token,
         fh.write(CLOUD_CONFIG.substitute(etcd=str(etcd_token),
                                         sshkey="%s" % sshkey,
                                         ip_info = ip_info))
     instance = nt.servers.create(
-        "coreos_%s" % USER, 
+        "coreos_%s" % USER,
         "fd4d996e-9cf4-42bc-a834-741627b0e499", 3,
         min_count=n, max_count=n,
-        security_groups=["default", "coreos"], 
+        security_groups=["default", "coreos"],
         userdata=open('cloud-config_%s.yaml' % public, 'r'), key_name=KEYNAME,
         nics=[{"net-id": "165265ee-d257-43d7-b3b7-e579cd749ed4"}]
     )
-    time.sleep(10)
     if public:
+        time.sleep(10)
         ip = freeips[0].ip
         instance.add_floating_ip(freeips[0])
+        print("export FLEETCTL_TUNNEL=%s:22" % ip)
 
-print("export FLEETCTL_TUNNEL=%s:22" % ip)
