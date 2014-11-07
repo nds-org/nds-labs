@@ -1,0 +1,18 @@
+[Unit]
+Description=postgres-icat
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=-/usr/bin/docker kill db1
+ExecStartPre=-/usr/bin/docker rm db1
+ExecStartPre=/usr/bin/docker pull ndslabs/postgres-icat
+ExecStart=/usr/bin/docker run --name db1 ndslabs/postgres-icat
+#ExecStop=/usr/bin/docker stop db1
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+X-Conflicts=postgres-icat.service

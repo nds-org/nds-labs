@@ -4,11 +4,11 @@ Description=ytwebapp.service
 [Service]
 TimeoutStartSec=0
 EnvironmentFile=/etc/environment
-ExecStartPre=-/usr/bin/docker rm celery
+ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f celery > /dev/null ; true"
 ExecStartPre=/usr/bin/docker pull ndslabs/ythub_worker
 ExecStart=/usr/bin/docker run -v /var/lib/docker:/var/lib/docker --privileged -p 8888 --name=celery \
    -e ytfidopassword=${ytfidopassword} \
-   -e COREOS_PUBLIC_IPV4=${COREOS_PRIVATE_IPV4} \
+   -e COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} \
    -e ICAT_CPORT=${ICAT_CPORT} \
    -e irodszone=${irodszone} \
    -e IRODS_DATADIR=${IRODS_DATADIR} \
