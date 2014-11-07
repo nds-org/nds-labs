@@ -18,12 +18,17 @@ coreos:
       command: start
     - name: fleet.service
       command: start
+  fleet:
+     public_ip="$$private_ipv4"
+     metadata="elastic_ip=true,public_ip=$$public_ipv4"
 ssh_authorized_keys:
   # include one or more SSH public keys
-  - $sshkey''')
+  - $sshkey
+''')
 
 
 SSHKEY = os.environ.get('SSHKEY', '/home/kacperk/shakuras.pub')
+KEYNAME = os.environ.get('SSHKEYNAME', 'shakuras')
 USER = os.environ.get('OS_USERNAME', 'NCSAUSER')
 PASS = os.environ.get('OS_PASSWORD', 'NCSAPASS')
 TENANT = os.environ.get('OS_TENANT_NAME', 'NCSATENANT')
@@ -47,7 +52,7 @@ instance = nt.servers.create(
     "fd4d996e-9cf4-42bc-a834-741627b0e499", 3,
     min_count=3, max_count=3,
     security_groups=["default", "coreos"], 
-    userdata=open('cloud-config.yaml', 'r'), key_name="shakuras",
+    userdata=open('cloud-config.yaml', 'r'), key_name=KEYNAME,
     nics=[{"net-id": "165265ee-d257-43d7-b3b7-e579cd749ed4"}]
 )
 time.sleep(10)
