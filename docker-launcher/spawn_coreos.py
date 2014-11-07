@@ -18,15 +18,11 @@ coreos:
       command: start
     - name: fleet.service
       command: start
+  fleet:
+     metadata: $ip_info
 ssh_authorized_keys:
   # include one or more SSH public keys
-  - $sshkey
-write_files:
-  - path: /etc/fleet/fleet.conf
-    content: |
-      public_ip="$$private_ipv4"
-      metadata="$ip_info"
-''')
+  - $sshkey''')
 
 
 SSHKEY = os.environ.get('SSHKEY', '/home/kacperk/shakuras.pub')
