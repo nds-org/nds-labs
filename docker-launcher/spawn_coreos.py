@@ -19,8 +19,8 @@ coreos:
     - name: fleet.service
       command: start
   fleet:
-     public_ip="$$private_ipv4"
-     metadata="elastic_ip=true,public_ip=$$public_ipv4"
+     public_ip: $$private_ipv4
+     metadata: elastic_ip=true,public_ip=$$public_ipv4
 ssh_authorized_keys:
   # include one or more SSH public keys
   - $sshkey
@@ -56,4 +56,7 @@ instance = nt.servers.create(
     nics=[{"net-id": "165265ee-d257-43d7-b3b7-e579cd749ed4"}]
 )
 time.sleep(10)
+ip = freeips[0].ip
 instance.add_floating_ip(freeips[0])
+
+print("export FLEETCTL_TUNNEL=%s:22" % ip)
