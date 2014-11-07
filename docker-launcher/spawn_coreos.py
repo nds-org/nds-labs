@@ -18,12 +18,14 @@ coreos:
       command: start
     - name: fleet.service
       command: start
-  fleet:
-     public_ip: $$private_ipv4
-     metadata: elastic_ip=true,public_ip=$$public_ipv4
 ssh_authorized_keys:
   # include one or more SSH public keys
   - $sshkey
+write_files:
+  - path: /etc/fleet/fleet.conf
+    content: |
+      public_ip="$$private_ipv4"
+      metadata="elastic_ip=true,public_ip=$$public_ipv4"
 ''')
 
 
