@@ -1,3 +1,4 @@
+import time
 import os
 import requests
 from string import Template
@@ -19,8 +20,7 @@ coreos:
       command: start
 ssh_authorized_keys:
   # include one or more SSH public keys
-  - $sshkey
-''')
+  - $sshkey''')
 
 
 SSHKEY = os.environ.get('SSHKEY', '/home/kacperk/shakuras.pub')
@@ -47,7 +47,8 @@ instance = nt.servers.create(
     "fd4d996e-9cf4-42bc-a834-741627b0e499", 3,
     min_count=3, max_count=3,
     security_groups=["default", "coreos"], 
-    userdata="cloud-config.yaml", key_name="shakuras",
+    userdata=open('cloud-config.yaml', 'r'), key_name="shakuras",
     nics=[{"net-id": "165265ee-d257-43d7-b3b7-e579cd749ed4"}]
 )
+time.sleep(10)
 instance.add_floating_ip(freeips[0])
