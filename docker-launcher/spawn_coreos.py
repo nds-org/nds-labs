@@ -25,7 +25,7 @@ ssh_authorized_keys:
   - $sshkey''')
 
 
-SSHKEY = os.environ.get('SSHKEY', '/home/kacperk/shakuras.pub')
+SSHKEY = os.environ.get('SSHKEY', '/home/mturk/core.pub')
 KEYNAME = os.environ.get('SSHKEYNAME', 'shakuras')
 USER = os.environ.get('OS_USERNAME', 'NCSAUSER')
 PASS = os.environ.get('OS_PASSWORD', 'NCSAPASS')
@@ -65,5 +65,5 @@ for public, n in [(False, tot - npublic), (True, npublic)]:
         time.sleep(10)
         ip = freeips[0].ip
         instance.add_floating_ip(freeips[0])
-        print("export FLEETCTL_TUNNEL=%s:22" % ip)
+        print("export FLEETCTL_TUNNEL=%s" % ip)
 
