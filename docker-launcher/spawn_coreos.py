@@ -57,8 +57,10 @@ if __name__ == "__main__":
                         default='NCSA')
     parser.add_argument('--net-id', action='store', dest='net_id',
                         default='165265ee-d257-43d7-b3b7-e579cd749ed4')
-    parser.add_argument('--vm-id', action='store', dest='vm_id',
+    parser.add_argument('--image-id', action='store', dest='image_id',
                         default='fd4d996e-9cf4-42bc-a834-741627b0e499')
+    parser.add_argument('--flavor-id', action='store', dest='flavor_id',
+                        default='3')
     args = parser.parse_args()
 
     with open(args.ssh_key, 'r') as fh:
@@ -88,7 +90,8 @@ if __name__ == "__main__":
         print "Creating ", n
         instance = nt.servers.create(
             "coreos_%s" % args.cluster_name,
-            args.vm_id, 3,
+            args.image_id,
+            args.flavor_id,
             min_count=n, max_count=n,
             security_groups=["default", "coreos"],
             userdata=open('cloud-config_%s.yaml' % public, 'r'),
