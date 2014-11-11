@@ -1,3 +1,4 @@
+import argparse
 import time
 import os
 import requests
@@ -24,46 +25,83 @@ ssh_authorized_keys:
   # include one or more SSH public keys
   - $sshkey''')
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description = "Spawn our coreOS.")
+    parser.add_argument('--ssh-key', action='store', dest='ssh_key',
+                        default = "/home/mturk/core.pub")
+    parser.add_argument('--ssh-key-name', action='store', dest='ssh_key_name',
+                        default = 'core')
+    parser.add_argument('--openstack-user', action='store',
+                        dest='openstack_user',
+                        default=os.environ.get('OS_USERNAME', None))
+    parser.add_argument('--openstack-pass', action='store',
+                        dest='openstack_pass',
+                        default=os.environ.get('OS_PASSWORD', None))
+    parser.add_argument('--openstack-url', action='store',
+                        dest='openstack_url',
+                        default=os.environ.get('OS_AUTH_URL', None))
+    parser.add_argument('--openstack-tenant', action='store',
+                        dest='openstack_tenant',
+                        default=os.environ.get('OS_TENANT_NAME', None))
+    parser.add_argument('--total-vms', action='store', type=int,
+                        dest = 'total_vms', default=3)
+    parser.add_argument('--total-public', action='store', type=int,
+                        dest = 'total_public', default=1)
+    parser.add_argument('--name', action='store', dest='cluster_name',
+                        default='testing')
+    parser.add_argument('--ip', action='store', dest='desired_ip',
+                        default=None)
+    parser.add_argument('--etcd-token', action='store', dest='etcd_token',
+                        default=None)
+    parser.add_argument('--region', action='store', dest='region',
+                        default='NCSA')
+    parser.add_argument('--net-id', action='store', dest='net_id',
+                        default = '165265ee-d257-43d7-b3b7-e579cd749ed4')
+    parser.add_argument('--vm-id', action='store', dest='vm_id',
+                        default = 'fd4d996e-9cf4-42bc-a834-741627b0e499')
+    args = parser.parse_args()
 
-SSHKEY = os.environ.get('SSHKEY', '/home/mturk/core.pub')
-KEYNAME = os.environ.get('SSHKEYNAME', 'shakuras')
-USER = os.environ.get('OS_USERNAME', 'NCSAUSER')
-PASS = os.environ.get('OS_PASSWORD', 'NCSAPASS')
-TENANT = os.environ.get('OS_TENANT_NAME', 'NCSATENANT')
-AUTH_URL = os.environ.get('OS_AUTH_URL', 'NCSAURL')
-tot = 3
-npublic = 1
+    with open(args.ssh_key, 'r') as fh:
+        sshkey = fh.read()
 
-with open(SSHKEY, 'r') as fh:
-    sshkey = fh.read()
+    nt = client.Client(args.openstack_user, args.openstack_pass,
+            args.openstack_tenant, args.openstack_url, service_type="compute")
+    if args.etcd_token is None:
+        args.etcd_token = requests.get("https://discovery.etcd.io/new").text
 
-nt = client.Client(USER, PASS, TENANT, AUTH_URL, service_type="compute")
-freeips = [ip for ip in nt.floating_ips.list() if ip.fixed_ip is None]
-etcd_token = requests.get("https://discovery.etcd.io/new").text
+    if len(freeips) < 1:
+        exit("No free floating ips")
 
-if len(freeips) < 1:
-    exit("No free floating ips")
-
-for public, n in [(False, tot - npublic), (True, npublic)]:
-    if public:
-        ip_info = "elastic_ip=true,public_ip=$public_ipv4"
-    else:
-        ip_info = "elastic_ip=false"
-    with open('cloud-config_%s.yaml' % public, 'w') as fh:
-        fh.write(CLOUD_CONFIG.substitute(etcd=str(etcd_token),
-                                        sshkey="%s" % sshkey,
-                                        ip_info = ip_info))
-    instance = nt.servers.create(
-        "coreos_%s" % USER,
-        "fd4d996e-9cf4-42bc-a834-741627b0e499", 3,
-        min_count=n, max_count=n,
-        security_groups=["default", "coreos"],
-        userdata=open('cloud-config_%s.yaml' % public, 'r'), key_name=KEYNAME,
-        nics=[{"net-id": "165265ee-d257-43d7-b3b7-e579cd749ed4"}]
-    )
-    if public:
-        time.sleep(10)
-        ip = freeips[0].ip
-        instance.add_floating_ip(freeips[0])
-        print("export FLEETCTL_TUNNEL=%s" % ip)
+    for public, n in [(False, args.total_vms - args.total_public),
+                      (True, args.total_public)]:
+        if public:
+            ip_info = "elastic_ip=true,public_ip=$public_ipv4,region=$region"
+        else:
+            ip_info = "elastic_ip=false,region=$region"
+        with open('cloud-config_%s.yaml' % public, 'w') as fh:
+            fh.write(CLOUD_CONFIG.substitute(etcd=str(args.etcd_token),
+                                            sshkey="%s" % sshkey,
+                                            ip_info = ip_info,
+                                            region = args.region))
+        instance = nt.servers.create(
+            "coreos_%s" % args.cluster_name,
+            args.vm_id, 3,
+            min_count=n, max_count=n,
+            security_groups=["default", "coreos"],
+            userdata=open('cloud-config_%s.yaml' % public, 'r'),
+            key_name=args.ssh_key_name,
+            nics=[{"net-id": args.net_id}]
+        )
+        if public:
+            time.sleep(10)
+            if args.desired_ip is None:
+                freeips = [ip for ip in nt.floating_ips.list() if ip.fixed_ip is None]
+            elif args.desired_ip.count('.') == 4:
+                freeips = [ip for ip in nt.floating_ips.list() if 
+                           ip.ip == args.desired_ip]
+            else:
+                freeips = [nt.floating_ips.get(args.desired_ip)]
+            ip = freeips[0].ip
+            instance.add_floating_ip(freeips[0])
+            print("export FLEETCTL_TUNNEL=%s" % ip)
 
