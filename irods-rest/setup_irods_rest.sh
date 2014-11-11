@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd /home/admin/irods-rest
-echo <<-EOF > src/main/resources/jargon-beans.xml
+cat <<EOF > src/main/resources/jargon-beans.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/security"
 	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -37,7 +37,7 @@ echo <<-EOF > src/main/resources/jargon-beans.xml
         <beans:property name="irodsPort" value="1247" />
         <beans:property name="irodsZone" value="$irodszone" />
         <beans:property name="defaultStorageResource" value="$irodsresc" />
-        <beans:property name="authType" value="STANDARD" /> <!--  STANDARD,PAM -->
+        <beans:property name="authType" value="PAM" /> <!--  STANDARD,PAM -->
         <beans:property name="allowCors" value="false" />
         <beans:property name="corsAllowCredentials" value="false" />
         <beans:property name="corsOrigins">
@@ -58,6 +58,7 @@ echo <<-EOF > src/main/resources/jargon-beans.xml
 
 
 </beans:beans>
+
 EOF
 
 mvn package -Dmaven.test.skip=true
