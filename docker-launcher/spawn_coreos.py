@@ -69,9 +69,6 @@ if __name__ == "__main__":
     if args.etcd_token is None:
         args.etcd_token = requests.get("https://discovery.etcd.io/new").text
 
-    if len(freeips) < 1:
-        exit("No free floating ips")
-
     for public, n in [(False, args.total_vms - args.total_public),
                       (True, args.total_public)]:
         if public:
@@ -101,6 +98,8 @@ if __name__ == "__main__":
                            ip.ip == args.desired_ip]
             else:
                 freeips = [nt.floating_ips.get(args.desired_ip)]
+            if len(freeips) < 1:
+                exit("No free floating ips")
             ip = freeips[0].ip
             instance.add_floating_ip(freeips[0])
             print("export FLEETCTL_TUNNEL=%s" % ip)
