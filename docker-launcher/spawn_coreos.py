@@ -69,8 +69,11 @@ if __name__ == "__main__":
     if args.etcd_token is None:
         args.etcd_token = requests.get("https://discovery.etcd.io/new").text
 
-    for public, n in [(False, args.total_vms - args.total_public),
-                      (True, args.total_public)]:
+    for public, n in [
+                      (True, args.total_public)
+                      (False, args.total_vms - args.total_public),
+                     ]:
+	if n == 0: continue
         if public:
             ip_info = "elastic_ip=true,public_ip=$public_ipv4,region=$region"
         else:
@@ -93,7 +96,7 @@ if __name__ == "__main__":
             time.sleep(10)
             if args.desired_ip is None:
                 freeips = [ip for ip in nt.floating_ips.list() if ip.fixed_ip is None]
-            elif args.desired_ip.count('.') == 4:
+            elif args.desired_ip.count('.') == 3:
                 freeips = [ip for ip in nt.floating_ips.list() if 
                            ip.ip == args.desired_ip]
             else:
@@ -103,4 +106,5 @@ if __name__ == "__main__":
             ip = freeips[0].ip
             instance.add_floating_ip(freeips[0])
             print("export FLEETCTL_TUNNEL=%s" % ip)
+    print ("ETCD_TOKEN=%s" % args.etcd_token)
 
