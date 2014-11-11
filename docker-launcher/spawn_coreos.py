@@ -84,6 +84,8 @@ if __name__ == "__main__":
             fh.write(CLOUD_CONFIG.substitute(etcd=str(args.etcd_token),
                                             sshkey="%s" % sshkey,
                                             ip_info=ip_info))
+        print "etcd token is", args.etcd_token
+        print "Creating ", n
         instance = nt.servers.create(
             "coreos_%s" % args.cluster_name,
             args.vm_id, 3,
@@ -94,7 +96,6 @@ if __name__ == "__main__":
             nics=[{"net-id": args.net_id}]
         )
         if public:
-            time.sleep(10)
             if args.desired_ip is None:
                 freeips = [ip for ip in nt.floating_ips.list() if ip.fixed_ip is None]
             elif args.desired_ip.count('.') == 3:
@@ -105,6 +106,8 @@ if __name__ == "__main__":
             if len(freeips) < 1:
                 exit("No free floating ips")
             ip = freeips[0].ip
+            print "Adding IP", ip
+            time.sleep(10)
             instance.add_floating_ip(freeips[0])
             print("export FLEETCTL_TUNNEL=%s" % ip)
     print ("ETCD_TOKEN=%s" % args.etcd_token)
