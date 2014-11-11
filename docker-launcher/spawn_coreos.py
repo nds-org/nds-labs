@@ -26,11 +26,11 @@ ssh_authorized_keys:
   - $sshkey''')
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description = "Spawn our coreOS.")
+    parser = argparse.ArgumentParser(description="Spawn our coreOS.")
     parser.add_argument('--ssh-key', action='store', dest='ssh_key',
-                        default = "/home/mturk/core.pub")
+                        default="/home/mturk/core.pub")
     parser.add_argument('--ssh-key-name', action='store', dest='ssh_key_name',
-                        default = 'core')
+                        default='core')
     parser.add_argument('--openstack-user', action='store',
                         dest='openstack_user',
                         default=os.environ.get('OS_USERNAME', None))
@@ -44,9 +44,9 @@ if __name__ == "__main__":
                         dest='openstack_tenant',
                         default=os.environ.get('OS_TENANT_NAME', None))
     parser.add_argument('--total-vms', action='store', type=int,
-                        dest = 'total_vms', default=3)
+                        dest='total_vms', default=3)
     parser.add_argument('--total-public', action='store', type=int,
-                        dest = 'total_public', default=1)
+                        dest='total_public', default=1)
     parser.add_argument('--name', action='store', dest='cluster_name',
                         default='testing')
     parser.add_argument('--ip', action='store', dest='desired_ip',
@@ -56,16 +56,17 @@ if __name__ == "__main__":
     parser.add_argument('--region', action='store', dest='region',
                         default='NCSA')
     parser.add_argument('--net-id', action='store', dest='net_id',
-                        default = '165265ee-d257-43d7-b3b7-e579cd749ed4')
+                        default='165265ee-d257-43d7-b3b7-e579cd749ed4')
     parser.add_argument('--vm-id', action='store', dest='vm_id',
-                        default = 'fd4d996e-9cf4-42bc-a834-741627b0e499')
+                        default='fd4d996e-9cf4-42bc-a834-741627b0e499')
     args = parser.parse_args()
 
     with open(args.ssh_key, 'r') as fh:
         sshkey = fh.read()
 
     nt = client.Client(args.openstack_user, args.openstack_pass,
-            args.openstack_tenant, args.openstack_url, service_type="compute")
+                       args.openstack_tenant, args.openstack_url,
+                       service_type="compute")
     if args.etcd_token is None:
         args.etcd_token = requests.get("https://discovery.etcd.io/new").text
 
@@ -73,16 +74,16 @@ if __name__ == "__main__":
                       (True, args.total_public),
                       (False, args.total_vms - args.total_public),
                      ]:
-	if n == 0: continue
+        if n == 0: continue
         if public:
-            ip_info = "elastic_ip=true,public_ip=$public_ipv4,region=$region"
+            ip_info = "elastic_ip=true,public_ip=$public_ipv4,region=%s" % \
+                args.region
         else:
-            ip_info = "elastic_ip=false,region=$region"
+            ip_info = "elastic_ip=false,region=%s" % args.region
         with open('cloud-config_%s.yaml' % public, 'w') as fh:
             fh.write(CLOUD_CONFIG.substitute(etcd=str(args.etcd_token),
                                             sshkey="%s" % sshkey,
-                                            ip_info = ip_info,
-                                            region = args.region))
+                                            ip_info=ip_info))
         instance = nt.servers.create(
             "coreos_%s" % args.cluster_name,
             args.vm_id, 3,
@@ -97,7 +98,7 @@ if __name__ == "__main__":
             if args.desired_ip is None:
                 freeips = [ip for ip in nt.floating_ips.list() if ip.fixed_ip is None]
             elif args.desired_ip.count('.') == 3:
-                freeips = [ip for ip in nt.floating_ips.list() if 
+                freeips = [ip for ip in nt.floating_ips.list() if
                            ip.ip == args.desired_ip]
             else:
                 freeips = [nt.floating_ips.get(args.desired_ip)]
