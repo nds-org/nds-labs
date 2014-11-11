@@ -28,7 +28,7 @@ sudo usermod -G admin -a irods
 sed -i 's/^irodsHost.*/irodsHost localhost/' /var/lib/irods/.irods/.irodsEnv
 
 sleep 2
-sudo -u irods -i iadmin modresc demoResc host $HOSTNAME
+sudo -u irods -i iadmin rmresc demoResc 
 sudo -u irods -i iadmin mkuser ytfido rodsuser
 sudo -u irods -i iadmin moduser ytfido password ${ytfidopassword}
 sudo -u irods -i imkdir /${irodszone}/home/rods/data
