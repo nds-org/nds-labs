@@ -70,7 +70,7 @@ if __name__ == "__main__":
         args.etcd_token = requests.get("https://discovery.etcd.io/new").text
 
     for public, n in [
-                      (True, args.total_public)
+                      (True, args.total_public),
                       (False, args.total_vms - args.total_public),
                      ]:
 	if n == 0: continue
