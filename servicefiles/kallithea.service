@@ -5,10 +5,16 @@ Requires=docker.service
 
 [Service]
 TimeoutStartSec=0
-ExecStartPre=-/usr/bin/docker kill kallithea
-ExecStartPre=-/usr/bin/docker rm kallithea
+EnvironmentFile=/etc/environment
+ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f kallithea > /dev/null ; true"
 ExecStartPre=/usr/bin/docker pull ndslabs/kallithea
-ExecStart=/usr/bin/docker run --name kallithea -p 5000:5000 ndslabs/kallithea
-ExecStartPost=/usr/bin/etcdctl set /frontend:141.142.204.134/kallithea '[ "kallithea", "%H:5000" ]'
-ExecStop=/usr/bin/docker stop kallithea
-ExecStopPost=/usr/bin/etcdctl rm /frontend:141.142.204.134/kallithea 
+ExecStart=/usr/bin/docker run \
+	--name kallithea \
+	-p 5000:5000 \
+	ndslabs/kallithea
+ExecStartPost=/usr/bin/etcdctl set /proxy/proxies/kallithea http://${COREOS_PRIVATE_IPV4}:5000/
+ExecStop=/usr/bin/docker stop -t 5 kallithea
+ExecStopPost=/usr/bin/etcdctl rm /proxy/proxies/kallithea
+
+[X-Fleet]
+MachineMetadata=elastic_ip=false
