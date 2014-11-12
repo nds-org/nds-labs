@@ -3,6 +3,12 @@
 if [ ! -e /home/kallithea/production.ini ]
 then
   paster make-config Kallithea /home/kallithea/production.ini
+  cat << EOF >> /home/kallithea/production.ini
+# prefix middleware for rc
+[filter:proxy-prefix]
+use = egg:PasteDeploy#prefix
+prefix = /kallithea
+EOF
 fi
 
 if [ ! -d /home/kallithea/repos ]
