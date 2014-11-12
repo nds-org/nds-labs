@@ -15,3 +15,4 @@ WantedBy=multi-user.target
 
 [X-Fleet]
 X-ConditionMachineOf=postgres-icat.service
+MachineMetadata=elastic_ip=true
