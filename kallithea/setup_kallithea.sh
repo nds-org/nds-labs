@@ -3,11 +3,13 @@
 if [ ! -e /home/kallithea/production.ini ]
 then
   paster make-config Kallithea /home/kallithea/production.ini
+  sed -i 's/app:main/app:kallithea/' /home/kallithea/production.ini
   cat << EOF >> /home/kallithea/production.ini
 # prefix middleware for rc
-[filter:proxy-prefix]
+[filter-app:main]
 use = egg:PasteDeploy#prefix
 prefix = /kallithea
+next = kallithea
 EOF
 fi
 
@@ -19,6 +21,7 @@ fi
 if [ ! -e /home/kallithea/kallithea.db ]
 then
   paster setup-db /home/kallithea/production.ini \
+              --name=kallithea \
               --user=kallithea \
               --password=${kpass} \
               --email=${kemail}  \
