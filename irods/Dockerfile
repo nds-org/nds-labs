@@ -36,6 +36,7 @@ RUN chsh -s /bin/bash admin
 #install iRODS
 RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-database-plugin-postgres-1.3.deb
 RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-icat-4.0.3-64bit.deb
+RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/plugins/irods_microservice_plugins_curl/1.1/irods-microservice-plugins-curl-1.1.deb
 
 # install package dependencies to prevent Docker build from erring out
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-icat-4.0.3-64bit.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
@@ -43,6 +44,9 @@ RUN dpkg -i /home/admin/irods-icat-4.0.3-64bit.deb
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-database-plugin-postgres-1.3.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN dpkg -i /home/admin/irods-database-plugin-postgres-1.3.deb
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-microservice-plugins-curl-1.1.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
+RUN dpkg -i /home/admin/irods-microservice-plugins-curl-1.1.deb
 
 ADD ./icat/server.sh /home/admin/server.sh
 ADD ./icat/runAll.sh /home/admin/runAll.sh
