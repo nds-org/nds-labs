@@ -25,8 +25,8 @@ sudo su -c "/var/lib/irods/packaging/setup_irods.sh </home/admin/dbresp"
 sudo usermod -G admin -a irods
 ## change irods user's irodsEnv file to point to localhost, since 
 ## it was configured with a transient Docker container's hostname
-sed -i 's/^irodsHost.*/irodsHost icat1' /var/lib/irods/.irods/.irodsEnv
-sed -i 's/demoResc/defaultResc' /var/lib/irods/.irods/.irodsEnv
+sed -i 's/^irodsHost.*/irodsHost icat1/' /var/lib/irods/.irods/.irodsEnv
+sed -i 's/demoResc/defaultResc/' /var/lib/irods/.irods/.irodsEnv
 
 sleep 2
 sudo -u irods -i iadmin rmresc demoResc 
