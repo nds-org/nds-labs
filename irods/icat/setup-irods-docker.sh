@@ -11,7 +11,7 @@ ${irodszone}
 ${localzonesid}
 ${keyforagent}
 rods
-rods
+${irodspassword}
 yes
 ${dbhost}
 5432
@@ -25,10 +25,13 @@ sudo su -c "/var/lib/irods/packaging/setup_irods.sh </home/admin/dbresp"
 sudo usermod -G admin -a irods
 ## change irods user's irodsEnv file to point to localhost, since 
 ## it was configured with a transient Docker container's hostname
-sed -i 's/^irodsHost.*/irodsHost localhost/' /var/lib/irods/.irods/.irodsEnv
+sed -i 's/^irodsHost.*/irodsHost icat1' /var/lib/irods/.irods/.irodsEnv
+sed -i 's/demoResc/defaultResc' /var/lib/irods/.irods/.irodsEnv
 
 sleep 2
 sudo -u irods -i iadmin rmresc demoResc 
+sudo -u irods -i iadmin mkresc defaultResc unixfilesystem \
+    icat1:/var/lib/irods/Vault
 sudo -u irods -i iadmin mkuser ytfido rodsuser
 sudo -u irods -i iadmin moduser ytfido password ${ytfidopassword}
 sudo -u irods -i imkdir /${irodszone}/home/rods/data

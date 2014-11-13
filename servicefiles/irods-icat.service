@@ -14,6 +14,7 @@ ExecStart=/usr/bin/docker run \
      -e dbhost=db1 \
      -e irodspassword=${irodspassword} \
      -e ytfidopassword=${ytfidopassword} \
+	-h icat1 \
 	--name icat1 --link db1:db1 \
 	-v /mnt/data:/var/lib/irods/Vault \
 	-p 1247 ndslabs/irods-icat
