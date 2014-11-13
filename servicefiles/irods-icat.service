@@ -21,7 +21,7 @@ ExecStart=/usr/bin/docker run \
 ExecStop=/usr/bin/docker kill icat1
 ExecStartPost=/usr/bin/etcdctl set /irods/zone ${irodszone}
 ExecStartPost=/usr/bin/etcdctl set /irods/host ${COREOS_PRIVATE_IPV4}
-ExecStartPost=/usr/bin/etcdctl set /irods/port 1247
+ExecStartPost=/usr/bin/etcdctl set /irods/port $(docker port icat1 1247 | cut -f 2 -d:)
 
 [Install]
 WantedBy=multi-user.target
