@@ -29,7 +29,7 @@ ADD irods-fuse.sh /tmp/irods-fuse.sh
 RUN bash /tmp/irods-fuse.sh
 
 # supervisor process manager
-RUN pip install supervisor
+RUN pip install supervisor python-etcd
 ADD aux/supervisor/supervisord.conf /etc/supervisord.conf
 
 RUN curl -O https://bitbucket.org/nds-org/yt_webapp/raw/master/rest2/requirements.txt && \ 
@@ -45,7 +45,7 @@ ADD aux/app/ /home/user/yt_serve/
 ADD ./wrapdocker /usr/local/bin/wrapdocker
 RUN chmod +x /usr/local/bin/wrapdocker
 
-ADD ./run-setup_irods.sh /usr/local/bin/setup_irodsuser
+ADD ./setup_irods.py /usr/local/bin/setup_irodsuser
 RUN chmod +x /usr/local/bin/setup_irodsuser
 
 VOLUME /var/lib/docker
