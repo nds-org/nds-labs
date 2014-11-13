@@ -8,10 +8,19 @@ EnvironmentFile=/etc/environment
 ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f icat1 > /dev/null ; true"
 ExecStartPre=/usr/bin/docker pull ndslabs/irods-icat
 ExecStart=/usr/bin/docker run \
+     -e irodszone=${irodszone} \
+     -e localzonesid=${localzonesid} \
+     -e keyforagent=${keyforagent} \
+     -e dbhost=db1 \
+     -e irodspassword=${irodspassword} \
+     -e ytfidopassword=${ytfidopassword} \
 	--name icat1 --link db1:db1 \
 	-v /mnt/data:/var/lib/irods/Vault \
 	-p 1247 ndslabs/irods-icat
 ExecStop=/usr/bin/docker kill icat1
+ExecStartPost=/usr/bin/etcdctl set /irods/zone ${irodszone}
+ExecStartPost=/usr/bin/etcdctl set /irods/host %H
+ExecStartPost=/usr/bin/etcdctl set /irods/port 1247
 
 [Install]
 WantedBy=multi-user.target
