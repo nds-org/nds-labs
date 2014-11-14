@@ -11,7 +11,7 @@ ${irodszone}
 ${localzonesid}
 ${keyforagent}
 rods
-${irodspassword}
+rods
 yes
 ${dbhost}
 5432
