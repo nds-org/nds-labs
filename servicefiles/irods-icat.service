@@ -5,7 +5,8 @@ Requires=etcd.service docker.service
 
 [Service]
 TimeoutStartSec=0
-EnvironmentFile=/etc/environment /etc/hubenv
+EnvironmentFile=/etc/environment
+EnvironmentFile=/etc/hubenv
 ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f icat1 > /dev/null ; true"
 ExecStartPre=/usr/bin/docker pull ndslabs/irods-icat
 ExecStart=/usr/bin/docker run \
