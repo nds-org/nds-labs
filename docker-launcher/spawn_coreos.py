@@ -148,10 +148,11 @@ if __name__ == "__main__":
         )
         if mounts:
             time.sleep(10)
+            # 3rd argument is unfortunately bogus...
             nt.volumes.create_server_volume(
-                instance.id, args.dbvol_id, '/dev/vde')
+                instance.id, args.dbvol_id, '/dev/vdd')
             nt.volumes.create_server_volume(
-                instance.id, args.icatvol_id, '/dev/vdf')
+                instance.id, args.icatvol_id, '/dev/vde')
             thismount = False
         if public:
             if args.desired_ip is None:
