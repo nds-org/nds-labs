@@ -9,6 +9,7 @@ EnvironmentFile=/etc/environment
 ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f db1 > /dev/null ; true"
 ExecStartPre=/usr/bin/docker pull ndslabs/postgres-icat
 ExecStart=/usr/bin/docker run \
+	--env-file=/etc/hubenv \
 	-v /mnt/dbdata/data:/var/lib/postgresql/data \
 	--name db1 ndslabs/postgres-icat
 ExecStop=/usr/bin/docker kill db1

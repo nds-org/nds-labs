@@ -9,6 +9,7 @@ ExecStartPre=/usr/bin/docker pull ndslabs/proxy
 ExecStart=/usr/bin/docker run \
 	--name proxy \
 	--env-file=/etc/environment \
+	--env-file=/etc/hubenv \
 	-p 80:8000 \
 	ndslabs/proxy
 ExecStop=/usr/bin/docker kill proxy

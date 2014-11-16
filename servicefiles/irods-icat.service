@@ -5,17 +5,11 @@ Requires=etcd.service docker.service
 
 [Service]
 TimeoutStartSec=0
-Environment=irodszone=tempZone
-EnvironmentFile=/etc/environment
+EnvironmentFile=/etc/environment /etc/hubenv
 ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f icat1 > /dev/null ; true"
 ExecStartPre=/usr/bin/docker pull ndslabs/irods-icat
 ExecStart=/usr/bin/docker run \
-     -e irodszone=${irodszone} \
-     -e localzonesid=${localzonesid} \
-     -e keyforagent=${keyforagent} \
-     -e dbhost=db1 \
-     -e irodspassword=${irodspassword} \
-     -e ytfidopassword=${ytfidopassword} \
+     --env-file=/etc/hubenv \
      -h icat1 \
      --name icat1 --link db1:db1 \
      -v /mnt/data:/var/lib/irods/Vault \
