@@ -46,7 +46,13 @@ coreos:
      metadata: $ip_info
 ssh_authorized_keys:
   # include one or more SSH public keys
-  - $sshkey''')
+  - $sshkey
+write_files:
+  - path: /etc/hubenv
+    permissions: 0644
+    owner: root
+    content: |
+$envfile''')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Spawn our coreOS.")
@@ -54,6 +60,8 @@ if __name__ == "__main__":
                         default="/home/mturk/core.pub")
     parser.add_argument('--ssh-key-name', action='store', dest='ssh_key_name',
                         default='core')
+    parser.add_argument('--env-file', action='store', dest='env_file',
+                        default='production.env')
     parser.add_argument('--openstack-user', action='store',
                         dest='openstack_user',
                         default=os.environ.get('OS_USERNAME', None))
@@ -88,6 +96,8 @@ if __name__ == "__main__":
 
     with open(args.ssh_key, 'r') as fh:
         sshkey = fh.read()
+    with open(args.env_file, 'r') as fh:
+        environ = fh.read()
 
     nt = client.Client(args.openstack_user, args.openstack_pass,
                        args.openstack_tenant, args.openstack_url,
@@ -108,7 +118,8 @@ if __name__ == "__main__":
         with open('cloud-config_%s.yaml' % public, 'w') as fh:
             fh.write(CLOUD_CONFIG.substitute(etcd=str(args.etcd_token),
                                             sshkey="%s" % sshkey,
-                                            ip_info=ip_info))
+                                            ip_info=ip_info,
+                                            envfile=environ))
         print "etcd token is", args.etcd_token
         print "Creating ", n
         instance = nt.servers.create(
