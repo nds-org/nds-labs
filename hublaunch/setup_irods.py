@@ -2,7 +2,6 @@
 
 import os
 import sys
-import etcd
 import subprocess
 import urlparse
 import json
@@ -15,17 +14,14 @@ ugid = user.pw_gid
 ihome = os.path.join(uhome, ".irods")
 if not os.path.isdir(ihome):
     os.mkdir(ihome, 0700)
-    # os.chown(ihome, uuid, ugid)
 
 if not os.path.isfile(os.path.join(ihome, ".irodsEnv")):
     host_ip = os.environ.get('COREOS_PRIVATE_IPV4', None)
-    client = etcd.Client(host=host_ip, port=4001)
     with open(os.path.join(ihome, ".irodsEnv"), 'w') as fh:
-        fh.write("irodsHost %s\n" % client.read('/irods/host').value)
-        fh.write("irodsPort %s\n" % client.read('/irods/port').value)
-        fh.write("irodsZone %s\n" % client.read('/irods/zone').value)
+        fh.write("irodsHost %s\n" % os.environ.get('irodsHost', ''))
+        fh.write("irodsPort %s\n" % os.environ.get('irodsPort', ''))
+        fh.write("irodsZone %s\n" % os.environ.get('irodsZone', ''))
         fh.write("irodsUserName ytfido\n")
-    # os.chown(os.path.join(ihome, ".irodsEnv"), uuid, ugid)
 
 if not os.path.isfile(os.path.join(ihome, ".irodsA")):
     cmd = "iinit %s" % os.environ.get('ytfidopassword', '3nthr0py')

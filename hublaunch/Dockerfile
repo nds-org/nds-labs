@@ -19,7 +19,7 @@ RUN useradd -D --shell=/bin/bash && \
     adduser user sudo && \
     echo "user_allow_other" >> /etc/fuse.conf
 
-RUN pip install python-etcd sympy
+RUN pip install sympy
 RUN pip install --allow-external pattern
 
 # install irods client
