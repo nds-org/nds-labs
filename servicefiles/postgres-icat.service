@@ -18,5 +18,4 @@ ExecStop=/usr/bin/docker kill db1
 WantedBy=multi-user.target
 
 [X-Fleet]
-Conflicts=postgres-icat.service
-#MachineMetadata=volume=dbdata
+MachineMetadata=mounts=true

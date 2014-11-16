@@ -22,4 +22,4 @@ WantedBy=multi-user.target
 
 [X-Fleet]
 MachineOf=postgres-icat.service
-#MachineMetadata=elastic_ip=true
+MachineMetadata=mounts=true
