@@ -105,6 +105,7 @@ if __name__ == "__main__":
     if args.etcd_token is None:
         args.etcd_token = requests.get("https://discovery.etcd.io/new").text
 
+    mounts = True
     for public, n in [
                       (True, args.total_public),
                       (False, args.total_vms - args.total_public),
@@ -115,6 +116,9 @@ if __name__ == "__main__":
                 args.region
         else:
             ip_info = "elastic_ip=false,region=%s" % args.region
+            if mounts:
+                ip_info += ",mounts=true"
+                mounts = False
         with open('cloud-config_%s.yaml' % public, 'w') as fh:
             fh.write(CLOUD_CONFIG.substitute(etcd=str(args.etcd_token),
                                             sshkey="%s" % sshkey,
