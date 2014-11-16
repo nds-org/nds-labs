@@ -42,5 +42,8 @@ for directory in json.loads(os.environ.get('mounts', '[]')):
     subprocess.call(cmd, shell=True)
 
 # os.chdir("fuse")
-os.execlp("python2.7", "-u", sys.argv[1])
+if len(sys.argv) == 2:
+    os.execlp("python2.7", "-u", sys.argv[1])
+else:
+    os.execlp("ipython", "notebook", "--no-browser")
 os.chdir(cwd)
