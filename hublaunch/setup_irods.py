@@ -45,7 +45,8 @@ for directory in json.loads(os.environ.get('mounts', '[]')):
 if len(sys.argv) == 2:
     os.execlp("python2.7", "-u", sys.argv[1])
 else:
-    # os.execlp("ipython", "notebook")  # for some reason this just open
-    # ipython shell
-    subprocess.call("ipython notebook", shell=True)
+    # for some reason this just open ipython shell
+    # os.execlp("ipython", "notebook")
+    os.environ.get("IPYTHONDIR", "/home/user/ipython-conf")
+    subprocess.call("ipython notebook --profile=nbserver", shell=True)
 os.chdir(cwd)

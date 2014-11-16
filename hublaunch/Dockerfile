@@ -26,16 +26,13 @@ RUN pip install --allow-external pattern
 ADD irods-fuse.sh /tmp/irods-fuse.sh
 RUN bash /tmp/irods-fuse.sh
 
-# IPython
-ENV IPYTHONDIR /ipython
-RUN mkdir /ipython && \
-    ipython profile create nbserver
-
 # Install yt
 RUN cd /tmp && \
     hg clone -r stable http://bitbucket.org/yt_analysis/yt && \
-    cd yt && \
-    python2.7 setup.py install
+    pushd yt &> /dev/null && \
+    python2.7 setup.py install && \
+    popd &> /dev/null \
+    rm -rf yt
 
 # ThingKing
 RUN pip install thingking darksky_catalog
@@ -44,4 +41,10 @@ ADD ./setup_irods.py /usr/local/bin/setup_irodsuser
 RUN chmod +x /usr/local/bin/setup_irodsuser
 
 RUN mkdir /mnt/data && chown user:root /mnt/data
+
+# IPython
+ADD ./ipython-conf.tgz /home/user/
+RUN chown -R user /home/user/
+ENV IPYTHONDIR /home/user/ipython-conf
+
 USER user
