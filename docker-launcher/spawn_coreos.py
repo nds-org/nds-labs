@@ -9,7 +9,8 @@ CLOUD_CONFIG = Template('''#cloud-config
 
 coreos:
   etcd:
-    # generate a new token for each unique cluster from https://discovery.etcd.io/new
+    # generate a new token for each unique cluster
+    # from https://discovery.etcd.io/new
     discovery: $etcd
     # multi-region and multi-cloud deployments need to use $$public_ipv4
     addr: $$private_ipv4:4001
@@ -109,27 +110,30 @@ if __name__ == "__main__":
     if args.etcd_token is None:
         args.etcd_token = requests.get("https://discovery.etcd.io/new").text
 
-    mounts = True
-    thismounts= False
-    for public, n in [
-                      (True, args.total_public),
-                      (False, args.total_vms - args.total_public),
-                     ]:
-        if n == 0: continue
+    for public, mounts, n in [
+        (True, False, args.total_public),
+        (False, True, 1),
+        (False, False, args.total_vms - args.total_public - 1),
+    ]:
+        if n == 0:
+            continue
+
+        ip_info = "region=%s" % args.region
         if public:
-            ip_info = "elastic_ip=true,public_ip=$public_ipv4,region=%s" % \
-                args.region
+            ip_info += ",elastic_ip=true,public_ip=$public_ipv4"
         else:
-            ip_info = "elastic_ip=false,region=%s" % args.region
-            if mounts:
-                ip_info += ",mounts=true"
-                mounts = False
-                thismounts = True
+            ip_info += ",elastic_ip=false"
+        if mounts:
+            ip_info += ",mounts=true"
+        else:
+            ip_info += ",mounts=false"
+
+        print ip_info
         with open('cloud-config_%s.yaml' % public, 'w') as fh:
             fh.write(CLOUD_CONFIG.substitute(etcd=str(args.etcd_token),
-                                            sshkey="%s" % sshkey,
-                                            ip_info=ip_info,
-                                            envfile=environ))
+                                             sshkey="%s" % sshkey,
+                                             ip_info=ip_info,
+                                             envfile=environ))
         print "etcd token is", args.etcd_token
         print "Creating ", n
         instance = nt.servers.create(
@@ -142,14 +146,17 @@ if __name__ == "__main__":
             key_name=args.ssh_key_name,
             nics=[{"net-id": args.net_id}]
         )
-        if thismounts:
-            time.sleep(10)  # needs to be in state active
-            nt.volumes.create_server_volume(instance, args.dbvol_id, '/dev/vde')
-            nt.volumes.create_server_volume(instance, args.icatvol_id, '/dev/vdf')
+        if mounts:
+            time.sleep(10)
+            nt.volumes.create_server_volume(
+                instance.id, args.dbvol_id, '/dev/vde')
+            nt.volumes.create_server_volume(
+                instance.id, args.icatvol_id, '/dev/vdf')
             thismount = False
         if public:
             if args.desired_ip is None:
-                freeips = [ip for ip in nt.floating_ips.list() if ip.fixed_ip is None]
+                freeips = [
+                    ip for ip in nt.floating_ips.list() if ip.fixed_ip is None]
             elif args.desired_ip.count('.') == 3:
                 freeips = [ip for ip in nt.floating_ips.list() if
                            ip.ip == args.desired_ip]
@@ -163,4 +170,3 @@ if __name__ == "__main__":
             instance.add_floating_ip(freeips[0])
             print("export FLEETCTL_TUNNEL=%s" % ip)
     print ("ETCD_TOKEN=%s" % args.etcd_token)
-
