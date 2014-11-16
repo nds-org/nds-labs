@@ -1,11 +1,3 @@
-# Sets up a container for the web based lab login
-#
-# VERSION               0.0.1
-
-# At some point, more of this will be pushed into its own docker image
-
-#FROM      phusion/baseimage:0.9.13
-
 FROM debian:sid
 MAINTAINER Kacper Kowalik "xarthius.kk@gmail.com"
 
@@ -48,5 +40,5 @@ RUN chmod +x /usr/local/bin/wrapdocker
 ADD ./setup_irods.py /usr/local/bin/setup_irodsuser
 RUN chmod +x /usr/local/bin/setup_irodsuser
 
-VOLUME /var/lib/docker
+VOLUME ["/tmp"]
 CMD supervisord -n -c /etc/supervisord.conf
