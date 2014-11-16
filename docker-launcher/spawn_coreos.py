@@ -90,6 +90,10 @@ if __name__ == "__main__":
                         default='165265ee-d257-43d7-b3b7-e579cd749ed4')
     parser.add_argument('--image-id', action='store', dest='image_id',
                         default='fd4d996e-9cf4-42bc-a834-741627b0e499')
+    parser.add_argument('--dbvol-id', action='store', dest='dbvol_id',
+                        default='e5b37fd8-1d7f-49f3-95bb-6c3127ee7199')
+    parser.add_argument('--icatvol-id', action='store', dest='icatvol_id',
+                        default='b89e0b67-9e93-4ab1-8e45-919a61c17e66')
     parser.add_argument('--flavor-id', action='store', dest='flavor_id',
                         default='3')
     args = parser.parse_args()
@@ -106,6 +110,7 @@ if __name__ == "__main__":
         args.etcd_token = requests.get("https://discovery.etcd.io/new").text
 
     mounts = True
+    thismounts= False
     for public, n in [
                       (True, args.total_public),
                       (False, args.total_vms - args.total_public),
@@ -119,6 +124,7 @@ if __name__ == "__main__":
             if mounts:
                 ip_info += ",mounts=true"
                 mounts = False
+                thismounts = True
         with open('cloud-config_%s.yaml' % public, 'w') as fh:
             fh.write(CLOUD_CONFIG.substitute(etcd=str(args.etcd_token),
                                             sshkey="%s" % sshkey,
@@ -136,6 +142,11 @@ if __name__ == "__main__":
             key_name=args.ssh_key_name,
             nics=[{"net-id": args.net_id}]
         )
+        if thismounts:
+            time.sleep(10)  # needs to be in state active
+            nt.volumes.create_server_volume(instance, args.dbvol_id, '/dev/vde')
+            nt.volumes.create_server_volume(instance, args.icatvol_id, '/dev/vdf')
+            thismount = False
         if public:
             if args.desired_ip is None:
                 freeips = [ip for ip in nt.floating_ips.list() if ip.fixed_ip is None]
