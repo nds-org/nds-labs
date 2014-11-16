@@ -6,10 +6,10 @@ TimeoutStartSec=0
 EnvironmentFile=/etc/environment
 ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f celery > /dev/null ; true"
 ExecStartPre=/usr/bin/docker pull ndslabs/ythub_worker
-ExecStart=/usr/bin/docker run -v /var/lib/docker:/var/lib/docker --privileged -p 8888 --name=celery \
-   -e ytfidopassword=${ytfidopassword} \
+ExecStart=/usr/bin/docker run --privileged -p 8888 --name=celery \
+   -e ytfidopassword=3nthr0py \
+   -e IRODS_DATADIR=/tempZone/home/ytfido \
    --env-file=/etc/environment \
-   -e IRODS_DATADIR=${IRODS_DATADIR} \
    ndslabs/ythub_worker
 ExecStop=/usr/bin/docker kill celery
 
