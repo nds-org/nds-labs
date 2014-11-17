@@ -8,16 +8,12 @@ ENV dbhost db1
 ENV irodspassword testpassword
 ENV ytfidopassword 3nthr0py
 
-
-RUN apt-get update
-RUN apt-get upgrade -y
-
 RUN locale-gen en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server supervisor wget dpkg sudo libcurl4-gnutls-dev
+RUN apt-get update && apt-get upgrade -y && DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server supervisor wget dpkg sudo libcurl4-gnutls-dev patch && apt-get clean
 
 RUN mkdir -p /var/run/sshd
 
@@ -44,7 +40,7 @@ RUN dpkg -i /home/admin/irods-icat-4.0.3-64bit.deb
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-database-plugin-postgres-1.3.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN dpkg -i /home/admin/irods-database-plugin-postgres-1.3.deb
-
+    DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-microservice-plugins-curl-1.1.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-microservice-plugins-curl-1.1.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN dpkg -i /home/admin/irods-microservice-plugins-curl-1.1.deb
 
@@ -52,6 +48,9 @@ ADD ./icat/server.sh /home/admin/server.sh
 ADD ./icat/runAll.sh /home/admin/runAll.sh
 ADD ./icat/setup-irods-docker.sh /home/admin/setup-irods-docker.sh
 RUN chmod a+x /home/admin/runAll.sh
+
+ADD ./icat/irods.patch /home/admin/irods.patch
+RUN cd /var/lib/irods && patch -p1 < /home/admin/irods.patch && chmod +x /var/lib/irods/packaging/setup_irods.sh
 
 # irods needs to be part of admin to execute supervisorctl
 EXPOSE 22 1247
