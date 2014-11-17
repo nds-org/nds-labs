@@ -40,11 +40,12 @@ RUN pip install thingking darksky_catalog
 ADD ./setup_irods.py /usr/local/bin/setup_irodsuser
 RUN chmod +x /usr/local/bin/setup_irodsuser
 
-RUN mkdir /mnt/data && chown user:root /mnt/data
-
 # IPython
 ADD ./ipython-conf.tgz /home/user/
 RUN chown -R user /home/user/
 ENV IPYTHONDIR /home/user/ipython-conf
+
+RUN mkdir /mnt/data && chown user:root /mnt/data
+RUN mkdir /results && chown user:root /results
 
 USER user
