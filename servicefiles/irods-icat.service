@@ -1,7 +1,7 @@
 [Unit]
 Description=irods-icat
-BindsTo=postgres-icat.service
-Requires=etcd.service docker.service
+BindsTo=postgres-icat.service mnt-data.mount
+Requires=etcd.service docker.service mnt-data.mount
 
 [Service]
 TimeoutStartSec=0

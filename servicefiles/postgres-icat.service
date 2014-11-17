@@ -1,6 +1,7 @@
 [Unit]
 Description=postgres-icat
 After=docker.service
+BindsTo=mnt-dbdata.mount
 Requires=docker.service
 
 [Service]
