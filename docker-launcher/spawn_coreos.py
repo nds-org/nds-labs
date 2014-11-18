@@ -8,6 +8,8 @@ from novaclient.v1_1 import client
 CLOUD_CONFIG = Template('''#cloud-config
 
 coreos:
+  update:
+    reboot-strategy: off
   etcd:
     # generate a new token for each unique cluster
     # from https://discovery.etcd.io/new
@@ -96,7 +98,7 @@ if __name__ == "__main__":
     parser.add_argument('--icatvol-id', action='store', dest='icatvol_id',
                         default='b89e0b67-9e93-4ab1-8e45-919a61c17e66')
     parser.add_argument('--flavor-id', action='store', dest='flavor_id',
-                        default='3')
+                        default='5')
     args = parser.parse_args()
 
     with open(args.ssh_key, 'r') as fh:
