@@ -19,4 +19,5 @@ ExecStop=/usr/bin/docker stop -t 5 owncloud1
 ExecStopPost=/usr/bin/etcdctl rm /proxy/proxies/owncloud
 
 [X-Fleet]
+MachineOf=postgres-icat.service
 MachineMetadata=elastic_ip=false
