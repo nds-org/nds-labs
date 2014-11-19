@@ -49,8 +49,8 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/bin/sh -c "/usr/sbin/wipefs -f $(blkid -L ephemeral0)"
-        ExecStart=/bin/sh -c "/usr/sbin/mkfs.btrfs -f $(blkid -L ephemeral0) -L ephemeral0"
+        ExecStart=/bin/sh -c "/usr/sbin/wipefs -f $$(blkid -L ephemeral0)"
+        ExecStart=/bin/sh -c "/usr/sbin/mkfs.btrfs -f $$(blkid -L ephemeral0) -L ephemeral0"
     - name: var-lib-docker.mount
       command: start
       content: |
@@ -71,7 +71,7 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/bin/sh -c "mkswap -f $(blkid -t TYPE=swap -o device) -L swap"
+        ExecStart=/bin/sh -c "mkswap -f $$(blkid -t TYPE=swap -o device) -L swap"
     - name: etcd.service
       command: start
     - name: fleet.service
