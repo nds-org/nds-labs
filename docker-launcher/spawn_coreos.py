@@ -49,8 +49,8 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/usr/sbin/wipefs -f /dev/vdb
-        ExecStart=/usr/sbin/mkfs.btrfs -f /dev/vdb
+        ExecStart=/usr/sbin/wipefs -f $(blkid -L "ephemeral0")
+        ExecStart=/usr/sbin/mkfs.btrfs -f $(blkid -L "ephemeral0")
     - name: var-lib-docker.mount
       command: start
       content: |
@@ -60,7 +60,7 @@ coreos:
         After=format-ephemeral.service
         Before=docker.service
         [Mount]
-        What=/dev/vdb
+        What=$(blkid -L "ephemeral0")
         Where=/var/lib/docker
         Type=btrfs
     - name: etcd.service
