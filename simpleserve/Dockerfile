@@ -1,3 +1,3 @@
 FROM kyma/docker-nginx
-VOLUMES ["/var/www/"]
+VOLUME ["/var/www/"]
 CMD 'nginx'
