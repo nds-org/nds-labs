@@ -20,5 +20,5 @@ ADD irods_setup.conf /etc/supervisor/conf.d/irods_setup.conf
 
 RUN a2enmod proxy && a2enmod proxy_http
 
-RUN mkdir /mnt/data && chown docker:root /mnt/data
-RUN mkdir /results && chown docker:root /results
+RUN mkdir /mnt/data && chown rstudio:root /mnt/data
+RUN mkdir /results && chown rstudio:root /results

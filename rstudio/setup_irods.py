@@ -7,7 +7,7 @@ import urlparse
 import json
 from pwd import getpwnam
 
-user = getpwnam("docker")
+user = getpwnam("rstudio")
 uhome = user.pw_dir
 uuid = user.pw_uid
 ugid = user.pw_gid
