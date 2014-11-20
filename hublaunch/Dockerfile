@@ -45,6 +45,12 @@ ADD ./ipython-conf.tgz /home/user/
 RUN chown -R user /home/user/
 ENV IPYTHONDIR /home/user/ipython-conf
 
+# Set default backend to Agg
+RUN sed -i -e '/^backend/ s/TkAgg/Agg/g' /etc/matplotlibrc
+
+# Install MathJax
+RUN python2.7 -c "from IPython.external import mathjax; mathjax.install_mathjax()"
+
 RUN mkdir /mnt/data && chown user:root /mnt/data
 RUN mkdir /results && chown user:root /results
 

@@ -37,7 +37,7 @@ for directory in json.loads(os.environ.get('mounts', '[]')):
     cmd = 'icd ' + path + ' && ' + 'irodsFs -o allow_other ' + target
     subprocess.call(cmd, shell=True)
 
-# os.chdir("fuse")
+os.chdir(cwd)
 if len(sys.argv) == 2:
     os.execlp("python2.7", "-u", sys.argv[1])
 else:
@@ -45,4 +45,3 @@ else:
     # os.execlp("ipython", "notebook")
     os.environ.get("IPYTHONDIR", "/home/user/ipython-conf")
     subprocess.call("ipython notebook --profile=nbserver", shell=True)
-os.chdir(cwd)
