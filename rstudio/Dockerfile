@@ -16,9 +16,10 @@ RUN bash /tmp/irods-fuse.sh
 ADD ./setup_irods.py /usr/local/bin/setup_irodsuser
 ADD 000-default.conf /etc/apache2/sites-enabled/000-default.conf
 RUN chmod +x /usr/local/bin/setup_irodsuser
-ADD irods_setup.conf /etc/supervisor/conf.d/irods_setup.conf
+ADD apache.conf /etc/supervisor/conf.d/apache.conf
 
 RUN a2enmod proxy && a2enmod proxy_http
 
-RUN mkdir /mnt/data && chown rstudio:root /mnt/data
-RUN mkdir /results && chown rstudio:root /results
+RUN mkdir /mnt/data
+RUN mkdir /results
+COPY userconf.sh /usr/bin/userconf.sh

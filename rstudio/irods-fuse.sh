@@ -23,9 +23,9 @@ EOF
 git clone https://github.com/iychoi/iRODS-FUSE-Mod.git
 pushd iRODS-FUSE-Mod &> /dev/null
 git checkout 814c8363a8f965fb65a3a400150ec257e8763b2f
-chown -R rstudio:root ../iRODS-FUSE-Mod
+chown -R docker:root ../iRODS-FUSE-Mod
 
-sudo -u rstudio ./irodssetup < ../irods_setup
+sudo -u docker ./irodssetup < ../irods_setup
 make fuse
 cp ./clients/icommands/bin/* $DESTDIR
 cp ./clients/fuse/bin/* $DESTDIR
