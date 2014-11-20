@@ -11,7 +11,7 @@ RUN apt-get update -qq && \
 
 # install irods client
 ADD irods-fuse.sh /tmp/irods-fuse.sh
-RUN bash /tmp/irods-fuse.sh
+RUN bash /tmp/irods-fuse.sh && echo "user_allow_other" >> /etc/fuse.conf
 
 ADD ./setup_irods.py /usr/local/bin/setup_irodsuser
 ADD 000-default.conf /etc/apache2/sites-enabled/000-default.conf
