@@ -7,7 +7,7 @@ import urlparse
 import json
 from pwd import getpwnam
 
-user = getpwnam("user")
+user = getpwnam("rstudio")
 uhome = user.pw_dir
 uuid = user.pw_uid
 ugid = user.pw_gid
@@ -36,12 +36,4 @@ for directory in json.loads(os.environ.get('mounts', '[]')):
     os.mkdir(target)
     cmd = 'icd ' + path + ' && ' + 'irodsFs -o allow_other ' + target
     subprocess.call(cmd, shell=True)
-
 os.chdir(cwd)
-if len(sys.argv) == 2:
-    os.execlp("python2.7", "-u", sys.argv[1])
-else:
-    # for some reason this just open ipython shell
-    # os.execlp("ipython", "notebook")
-    os.environ.get("IPYTHONDIR", "/home/user/ipython-conf")
-    subprocess.call("ipython notebook --profile=nbserver", shell=True)

@@ -1,6 +1,8 @@
 FROM ubuntu:14.04
 MAINTAINER matthewturk@gmail.com
-VOLUME ["/var/lib/irods/Vault", "/mnt/data"]
+
+VOLUME ["/var/lib/irods/Vault"]
+
 ENV irodszone tempZone
 ENV localzonesid TEMP_LOCAL_ZONE_SID
 ENV keyforagent temp_32_byte_key_for_agent__conn
@@ -13,9 +15,11 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
-RUN apt-get update && apt-get upgrade -y && DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server supervisor wget dpkg sudo libcurl4-gnutls-dev patch && apt-get clean
+RUN apt-get update && apt-get upgrade -y && \
+   DEBIAN_FRONTEND=noninteractive apt-get install -qyy python-dev python-pip supervisor wget dpkg sudo libcurl4-gnutls-dev patch && \
+   apt-get clean
 
-RUN mkdir -p /var/run/sshd
+RUN pip install python-etcd
 
 #set up supervisor
 RUN mkdir -p /var/log/supervisor
@@ -40,7 +44,6 @@ RUN dpkg -i /home/admin/irods-icat-4.0.3-64bit.deb
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-database-plugin-postgres-1.3.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN dpkg -i /home/admin/irods-database-plugin-postgres-1.3.deb
-    DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-microservice-plugins-curl-1.1.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-microservice-plugins-curl-1.1.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN dpkg -i /home/admin/irods-microservice-plugins-curl-1.1.deb
 
@@ -53,5 +56,5 @@ ADD ./icat/irods.patch /home/admin/irods.patch
 RUN cd /var/lib/irods && patch -p1 < /home/admin/irods.patch && chmod +x /var/lib/irods/packaging/setup_irods.sh
 
 # irods needs to be part of admin to execute supervisorctl
-EXPOSE 22 1247
+EXPOSE 1247
 ENTRYPOINT /home/admin/setup-irods-docker.sh
