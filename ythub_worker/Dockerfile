@@ -40,5 +40,8 @@ RUN chmod +x /usr/local/bin/wrapdocker
 ADD ./setup_irods.py /usr/local/bin/setup_irodsuser
 RUN chmod +x /usr/local/bin/setup_irodsuser
 
+ADD ./etcd_listener.py /usr/local/bin/etcd_listener
+RUN chmod +x /usr/local/bin/etcd_listener
+
 VOLUME ["/tmp"]
 CMD supervisord -n -c /etc/supervisord.conf
