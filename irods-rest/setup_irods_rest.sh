@@ -65,3 +65,5 @@ mvn package -Dmaven.test.skip=true
 
 sudo cp /home/admin/irods-rest/target/irods-rest-4.0.2.1-SNAPSHOT.war \
        /var/lib/tomcat6/webapps/irods-rest.war
+
+/usr/bin/supervisord "-n"

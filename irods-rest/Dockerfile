@@ -25,6 +25,11 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server \
                                         openjdk-6-jdk tomcat6 nginx \
                                         maven git
 
+#set up supervisor
+RUN mkdir -p /var/log/supervisor
+ADD ./common/supervisord.conf.etc /etc/supervisor/supervisord.conf
+ADD ./common/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # set up an admin user
 RUN useradd admin
 RUN echo 'admin:admin' | chpasswd

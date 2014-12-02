@@ -16,7 +16,9 @@ ENV LANGUAGE en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
 RUN apt-get update && apt-get upgrade -y && \
-   DEBIAN_FRONTEND=noninteractive apt-get install -qyy python-dev python-pip supervisor wget dpkg sudo libcurl4-gnutls-dev patch && \
+   DEBIAN_FRONTEND=noninteractive apt-get install -qyy python-dev python-pip \
+   supervisor wget libffi-dev libssl-dev \
+   dpkg sudo libcurl4-gnutls-dev patch && \
    apt-get clean
 
 RUN pip install python-etcd
@@ -37,15 +39,21 @@ RUN chsh -s /bin/bash admin
 RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-database-plugin-postgres-1.3.deb
 RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-icat-4.0.3-64bit.deb
 RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/plugins/irods_microservice_plugins_curl/1.1/irods-microservice-plugins-curl-1.1.deb
+RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-runtime-4.0.3-64bit.deb
 
 # install package dependencies to prevent Docker build from erring out
+
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-icat-4.0.3-64bit.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN dpkg -i /home/admin/irods-icat-4.0.3-64bit.deb
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-database-plugin-postgres-1.3.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN dpkg -i /home/admin/irods-database-plugin-postgres-1.3.deb
+
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-microservice-plugins-curl-1.1.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN dpkg -i /home/admin/irods-microservice-plugins-curl-1.1.deb
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-runtime-4.0.3-64bit.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
+RUN dpkg -i /home/admin/irods-runtime-4.0.3-64bit.deb
 
 ADD ./icat/server.sh /home/admin/server.sh
 ADD ./icat/runAll.sh /home/admin/runAll.sh
