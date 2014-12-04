@@ -128,6 +128,8 @@ if __name__ == "__main__":
                         default='e5b37fd8-1d7f-49f3-95bb-6c3127ee7199')
     parser.add_argument('--icatvol-id', action='store', dest='icatvol_id',
                         default='b89e0b67-9e93-4ab1-8e45-919a61c17e66')
+    parser.add_argument('--moinmoin-id', action='store', dest='moinmoinvol_id',
+                        default='1b74658a-9638-4db6-b7f3-1c2211f3776b')
     parser.add_argument('--flavor-id', action='store', dest='flavor_id',
                         default='5')
     args = parser.parse_args()
@@ -186,6 +188,8 @@ if __name__ == "__main__":
                 instance.id, args.dbvol_id, '/dev/vdd')
             nt.volumes.create_server_volume(
                 instance.id, args.icatvol_id, '/dev/vde')
+            nt.volumes.create_server_volume(
+                instance.id, args.moinmoinvol_id, '/dev/vdf')
             thismount = False
         if public:
             if args.desired_ip is None:
