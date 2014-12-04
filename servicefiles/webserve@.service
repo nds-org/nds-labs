@@ -12,9 +12,7 @@ ExecStart=/usr/bin/docker run \
     --name %i \
     -p 80 \
     ndslabs/%i
-ExecStartPost=/bin/sh -c "/usr/bin/etcdctl set /proxy/proxies/%i http://${COREOS_PRIVATE_IPV4}:$(docker port %i 80 | cut -f2 -d: )/"
 ExecStop=/usr/bin/docker stop -t 5 %i
-ExecStopPost=/usr/bin/etcdctl rm /proxy/proxies/%i
 
 [X-Fleet]
 MachineMetadata=elastic_ip=false
