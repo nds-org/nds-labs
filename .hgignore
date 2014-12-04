@@ -1,4 +1,5 @@
 ythub_worker/aux
+ythub_worker/root
 docker-launcher/coreos-config.yaml
 pubring.gpg~
 secring.gpg
