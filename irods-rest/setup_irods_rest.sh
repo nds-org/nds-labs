@@ -37,7 +37,7 @@ cat <<EOF > src/main/resources/jargon-beans.xml
         <beans:property name="irodsPort" value="1247" />
         <beans:property name="irodsZone" value="$irodszone" />
         <beans:property name="defaultStorageResource" value="$irodsresc" />
-        <beans:property name="authType" value="PAM" /> <!--  STANDARD,PAM -->
+        <beans:property name="authType" value="STANDARD" /> <!--  STANDARD,PAM -->
         <beans:property name="allowCors" value="false" />
         <beans:property name="corsAllowCredentials" value="false" />
         <beans:property name="corsOrigins">
