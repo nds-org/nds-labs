@@ -38,8 +38,9 @@ RUN chsh -s /bin/bash admin
 #install iRODS
 RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-database-plugin-postgres-1.3.deb
 RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-icat-4.0.3-64bit.deb
-RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/plugins/irods_microservice_plugins_curl/1.1/irods-microservice-plugins-curl-1.1.deb
+#RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/plugins/irods_microservice_plugins_curl/1.1/irods-microservice-plugins-curl-1.1.deb
 RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-runtime-4.0.3-64bit.deb
+RUN wget -P /home/admin ftp://ftp.renci.org/pub/irods/releases/4.0.3/irods-dev-4.0.3-64bit.deb
 
 # install package dependencies to prevent Docker build from erring out
 
@@ -49,11 +50,14 @@ RUN dpkg -i /home/admin/irods-icat-4.0.3-64bit.deb
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-database-plugin-postgres-1.3.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN dpkg -i /home/admin/irods-database-plugin-postgres-1.3.deb
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-microservice-plugins-curl-1.1.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
-RUN dpkg -i /home/admin/irods-microservice-plugins-curl-1.1.deb
+#RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-microservice-plugins-curl-1.1.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
+#RUN dpkg -i /home/admin/irods-microservice-plugins-curl-1.1.deb
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-runtime-4.0.3-64bit.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
 RUN dpkg -i /home/admin/irods-runtime-4.0.3-64bit.deb
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y `dpkg -I /home/admin/irods-dev-4.0.3-64bit.deb | sed -n 's/^ Depends: //p' | sed 's/,//g'`
+RUN dpkg -i /home/admin/irods-dev-4.0.3-64bit.deb
 
 ADD ./icat/server.sh /home/admin/server.sh
 ADD ./icat/runAll.sh /home/admin/runAll.sh
@@ -62,6 +66,11 @@ RUN chmod a+x /home/admin/runAll.sh
 
 ADD ./icat/irods.patch /home/admin/irods.patch
 RUN cd /var/lib/irods && patch -p1 < /home/admin/irods.patch && chmod +x /var/lib/irods/packaging/setup_irods.sh
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y git libcurl3 && \
+    git clone https://github.com/irods/irods_microservice_plugins_curl/ && \
+    cd irods_microservice_plugins_curl && \
+    ./packaging/build.sh && \
+    sudo dpkg -i build/irods-microservice-plugins-curl-1.1.deb
 
 # irods needs to be part of admin to execute supervisorctl
 EXPOSE 1247
