@@ -39,4 +39,7 @@ RUN chsh -s /bin/bash admin
 WORKDIR /home/admin
 RUN git clone https://github.com/DICE-UNC/irods-rest.git
 ADD ./setup_irods_rest.sh /home/admin/setup_irods_rest.sh
+ADD ./server.xml /etc/tomcat6/server.xml
+ADD ./tcstart.sh /home/admin/tcstart.sh
+RUN echo "AUTHBIND=yes" >> /etc/default/tomcat6
 CMD bash ./setup_irods_rest.sh
