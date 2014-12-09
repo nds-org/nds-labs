@@ -51,6 +51,8 @@ RUN sed -i -e '/^backend/ s/TkAgg/Agg/g' /etc/matplotlibrc
 # Install MathJax
 RUN python2.7 -c "from IPython.external import mathjax; mathjax.install_mathjax()"
 
+RUN pip install astropy scikit-learn
+
 RUN mkdir /mnt/data && chown user:root /mnt/data
 RUN mkdir /results && chown user:root /results
 
