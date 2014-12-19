@@ -131,7 +131,7 @@ if __name__ == "__main__":
     parser.add_argument('--moinmoin-id', action='store', dest='moinmoinvol_id',
                         default='1b74658a-9638-4db6-b7f3-1c2211f3776b')
     parser.add_argument('--flavor-id', action='store', dest='flavor_id',
-                        default='2b4b7a2b-c036-4c16-9bd4-105c56cba088')
+                        default='7d41966f-dedd-4b3a-b56f-dfd0c604e8f5')
     args = parser.parse_args()
 
     with open(args.ssh_key, 'r') as fh:
