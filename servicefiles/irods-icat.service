@@ -1,7 +1,7 @@
 [Unit]
 Description=irods-icat
 BindsTo=postgres-icat.service mnt-data.mount
-Requires=etcd.service docker.service mnt-data.mount irods-sidekick.service postgres-icat.service
+Requires=etcd.service docker.service mnt-data.mount postgres-icat.service
 Before=irods-sidekick.service
 After=postgres-icat.service
 
