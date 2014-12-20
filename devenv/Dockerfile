@@ -26,6 +26,7 @@ RUN cd /home/user && \
     tar xvfz julia-0.3.3_b24213b893.tar.gz && \
     cd julia-0.3 && \
     echo "prefix=/usr/local/" > Make.user && \
+    echo "JULIA_CPU_TARGET=core2" >> Make.user && \
     make
 USER root
 RUN sudo apt-get install -y patchelf
@@ -34,7 +35,11 @@ RUN cd /home/user/julia-0.3 && \
     sudo make install && \
     make clean 
 
+RUN apt-get purge -y ipython
 USER user
 
 RUN /usr/local/bin/julia -e 'Pkg.add("IJulia")'
 RUN /usr/local/bin/julia -e 'Pkg.add("YT")'
+ENV PATH /home/user/.local/bin:$PATH
+RUN /home/user/.local/bin/ipython kernelspec install \
+    /home/user/.julia/v0.3/IJulia/deps
