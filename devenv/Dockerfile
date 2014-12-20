@@ -35,3 +35,6 @@ RUN cd /home/user/julia-0.3 && \
     make clean 
 
 USER user
+
+RUN /usr/local/bin/julia -e 'Pkg.add("IJulia")'
+RUN /usr/local/bin/julia -e 'Pkg.add("YT")'

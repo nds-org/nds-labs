@@ -18,13 +18,11 @@ mv rest2 app
 popd &> /dev/null
 
 mkdir -p root/etc/supervisor.d
-mkdir -p root/tmp
 mkdir -p root/home/user/yt_serve
 mkdir -p root/usr/local/bin
 
-cp irods-fuse.sh root/tmp/irods-fuse.sh
 cp aux/supervisor/supervisord.conf root/etc/supervisord.conf
-cp aux/supervisor/*.conf /etc/supervisor.d/
+cp aux/supervisor/*.conf root/etc/supervisor.d/
 cp -r aux/app/* root/home/user/yt_serve/
 cp ./wrapdocker root/usr/local/bin/wrapdocker
 cp ./setup_irods.py root/usr/local/bin/setup_irodsuser

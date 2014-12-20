@@ -6,6 +6,7 @@ ENV IRODS_DATADIR /tempZone/home/rods/data
 
 RUN apt-get update -qq && \
     apt-get install -qy curl sudo python-dev python-pip git-core docker.io fuse libfuse-dev libssl-dev && \
+    apt-get upgrade -y && \
     apt-get clean
 
 RUN pip install supervisor python-etcd
@@ -20,6 +21,7 @@ RUN useradd -D --shell=/bin/bash && \
     echo "user_allow_other" >> /etc/fuse.conf
 
 ADD ./root.tar.xz /
+ADD ./irods-fuse.sh /tmp/
 # install irods client
 RUN bash /tmp/irods-fuse.sh
 RUN curl -O https://bitbucket.org/nds-org/yt_webapp/raw/master/rest2/requirements.txt && \ 
