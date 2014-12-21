@@ -31,3 +31,5 @@ RUN julia -e 'Pkg.add("YT")'
 RUN mkdir -p /home/user/ipython-conf/kernels/julia/
 ADD ./julia/kernel.json /home/user/ipython-conf/kernels/julia/
 ADD ./julia/logo-64x64.png /home/user/ipython-conf/kernels/julia/
+RUN mkdir -p /home/user/.yt
+ADD ./ytconfig /home/user/.yt/config
