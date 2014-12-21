@@ -4,12 +4,17 @@ USER root
 RUN pip uninstall -y yt 
 RUN apt-get update && \
     apt-get upgrade -qy && \
-    apt-get purge -y ipython && \
+    apt-get purge -y ipython python-tornado && \
+    apt-get autoremove -y && \
     apt-get install -y julia
+
+# This is to get a systemwide install that's not "editable"
 RUN cd /tmp/ && \
     git clone --recursive https://github.com/ipython/ipython.git && \
     cd ipython && \
     pip install -e ".[notebook]" && \
+    pip uninstall ipython && \
+    python2.7 setup.py install && \
     pip install terminado
 
 USER user 
@@ -20,5 +25,9 @@ RUN cd /home/user && \
 
 RUN julia -e 'Pkg.add("IJulia")'
 RUN julia -e 'Pkg.add("YT")'
-RUN ipython kernelspec install \
-    /home/user/.julia/v0.3/IJulia/deps
+
+# These assets are from Jupyter's demo dockerfile
+# https://github.com/jupyter/docker-demo-images/
+RUN mkdir -p /home/user/ipython-conf/kernels/julia/
+ADD ./julia/kernel.json /home/user/ipython-conf/kernels/julia/
+ADD ./julia/logo-64x64.png /home/user/ipython-conf/kernels/julia/
