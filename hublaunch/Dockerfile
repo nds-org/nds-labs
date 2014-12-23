@@ -56,4 +56,10 @@ RUN pip install astropy scikit-learn
 RUN mkdir /mnt/data && chown user:root /mnt/data
 RUN mkdir /results && chown user:root /results
 
+RUN apt-get install -y davfs2
+RUN usermod -aG davfs2 user
+RUN chmod +s /sbin/mount.davfs
+RUN echo "http://labs.nationaldataservice.org/owncloud/remote.php/webdav /home/user/work davfs user,rw,noauto 0 0" \
+    >> /etc/fstab
+
 USER user

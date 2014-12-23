@@ -37,6 +37,23 @@ for directory in json.loads(os.environ.get('mounts', '[]')):
     cmd = 'icd ' + path + ' && ' + 'irodsFs -o allow_other ' + target
     subprocess.call(cmd, shell=True)
 
+# Mount WebDAV access
+pw = os.environ.get("WEBDAV_OTP", None)
+host = os.environ.get("WEBDAV_HOST", None)
+user = os.environ.get("WEBDAV_USER", None)
+if None not in (pw, host, user):
+    if not os.path.isdir("/home/user/.davfs2"):
+        os.mkdir("/home/user/.davfs2")
+    if not os.path.isdir("/home/user/work"):
+        os.mkdir("/home/user/work")
+    # Now we mount our WebDAV host using davfs2
+    with open("/home/user/.davfs2/secrets", "w") as f:
+        f.write("/home/user/work %s \"%s\"\n" % (
+            user.replace("#","\\#"), pw))
+    subprocess.call("chmod 600 /home/user/.davfs2/secrets", shell=True)
+    cmd = "mount /home/user/work" % (host)
+    subprocess.call(cmd, shell=True)
+
 os.chdir(cwd)
 if len(sys.argv) == 2:
     os.execlp("python2.7", "-u", sys.argv[1])
