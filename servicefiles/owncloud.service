@@ -12,6 +12,7 @@ ExecStart=/usr/bin/docker run \
     --name owncloud1 \
     -p 80 \
     --link db2:db2 \
+    --link irodsrest1:irodsrest \
     ndslabs/owncloud
 ExecStop=/usr/bin/docker stop -t 5 owncloud1
 
