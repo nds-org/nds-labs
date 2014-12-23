@@ -28,6 +28,9 @@ sudo usermod -G admin -a irods
 sed -i 's/^irodsHost.*/irodsHost icat1/' /var/lib/irods/.irods/.irodsEnv
 sed -i 's/demoResc/defaultResc/' /var/lib/irods/.irods/.irodsEnv
 
+echo "xmsgHost localhost" >> /etc/irods/server.config
+echo "xmsgPort 1235" >> /etc/irods/server.config
+
 sleep 2
 sudo -u irods -i iadmin rmresc demoResc 
 sudo -u irods -i iadmin mkresc defaultResc unixfilesystem \
