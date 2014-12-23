@@ -10,14 +10,11 @@ ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f owncloud1 > /dev/null ; true"
 ExecStartPre=/usr/bin/docker pull ndslabs/owncloud
 ExecStart=/usr/bin/docker run \
     --name owncloud1 \
-    -p 80:8002 \
+    -p 80 \
+    --link db2:db2 \
     ndslabs/owncloud
-ExecStartPost=/usr/bin/etcdctl set \
-    /proxy/proxies/owncloud \
-    http://${COREOS_PRIVATE_IPV4}:8002
 ExecStop=/usr/bin/docker stop -t 5 owncloud1
-ExecStopPost=/usr/bin/etcdctl rm /proxy/proxies/owncloud
 
 [X-Fleet]
-MachineOf=postgres-icat.service
+MachineOf=postgres-owncloud.service
 MachineMetadata=elastic_ip=false
