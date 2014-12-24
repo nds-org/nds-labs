@@ -55,6 +55,7 @@ RUN pip install astropy scikit-learn
 
 RUN mkdir /mnt/data && chown user:root /mnt/data
 RUN mkdir /results && chown user:root /results
+RUN mkdir -p /home/user/work && chown user:root /home/user/work
 
 RUN apt-get install -y davfs2
 RUN usermod -aG davfs2 user

@@ -50,8 +50,10 @@ if None not in (pw, host, user):
     with open("/home/user/.davfs2/secrets", "w") as f:
         f.write("/home/user/work %s \"%s\"\n" % (
             user.replace("#","\\#"), pw))
+    with open("/home/user/.davfs2/davfs2.conf", "w") as f:
+        f.write("use_locks 0\n")
     subprocess.call("chmod 600 /home/user/.davfs2/secrets", shell=True)
-    cmd = "mount /home/user/work" % (host)
+    cmd = "mount /home/user/work"
     subprocess.call(cmd, shell=True)
 
 os.chdir(cwd)
