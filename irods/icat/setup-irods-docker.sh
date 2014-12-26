@@ -27,9 +27,14 @@ sudo usermod -G admin -a irods
 ## it was configured with a transient Docker container's hostname
 sed -i 's/^irodsHost.*/irodsHost icat1/' /var/lib/irods/.irods/.irodsEnv
 sed -i 's/demoResc/defaultResc/' /var/lib/irods/.irods/.irodsEnv
+sed -i 's/demoResc/defaultResc/' /etc/irods/core.re
 
 echo "xmsgHost localhost" >> /etc/irods/server.config
 echo "xmsgPort 1235" >> /etc/irods/server.config
+touch /etc/irods/NDS.re
+chown irods:irods /etc/irods/NDS.re
+chmod 600 /etc/irods/NDS.re
+sed -i 's/reRuleSet   core/reRuleSet   NDS,core' /etc/irods/server.config
 
 sleep 2
 sudo -u irods -i iadmin rmresc demoResc 
