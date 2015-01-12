@@ -1,7 +1,8 @@
 [Unit]
 Description=Set etcd for irods-rest
+Requires=irods-rest.service etcd.service
+After=irods-rest.service etcd.service
 BindsTo=irods-rest.service
-After=irods-rest.service
 
 [Service]
 EnvironmentFile=/etc/environment
