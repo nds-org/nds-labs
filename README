@@ -1,0 +1,33 @@
+NDS Labs
+========
+
+What's In The Box?
+------------------
+
+This is the main repository for the NDS Labs initiative, which is a part of the
+broader National Data Service (nationaldataservice.org) effort.
+
+NDSLabs is designed to be an experimental space for developing services and
+exploring interoperability between services.
+
+Inside this repo you will find:
+
+ * Dockerfiles for building docker images that can serve as the building blocks
+   for data services
+ * Servicefiles that manage the lifecycle of services running on a cluster
+ * Methods for launching an "NDSLabs" cluster based on CoreOS and Fleet
+
+The individual dockerfiles have been constructed to be as generic as possible,
+with information provided to them via environment variables specified at
+launch.  (And sane defaults in advance of that.)  In some cases this increases
+their startup time, but allows them to be flexible in deployment and
+utilization.
+
+Getting Started
+---------------
+
+Where to Get Help
+-----------------
+
+What's Next?
+------------
