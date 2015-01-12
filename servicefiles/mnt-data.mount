@@ -1,0 +1,13 @@
+[Unit]
+Description=irods volume
+
+[Mount]
+What=UUID="3a023ebe-fce2-4bd6-96ee-16db54d882cf"
+Where=/mnt/data
+Type=ext4
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=mounts=true

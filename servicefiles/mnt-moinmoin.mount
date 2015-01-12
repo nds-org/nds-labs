@@ -1,0 +1,13 @@
+[Unit]
+Description=moin moin volume
+
+[Mount]
+What=UUID="164a1562-e433-42df-9b99-bff5bf3ac2b5"
+Where=/mnt/moinmoin
+Type=ext4
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=mounts=true
