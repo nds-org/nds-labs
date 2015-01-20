@@ -1,7 +1,8 @@
 [Unit]
 Description=ownCloud
-BindsTo=postgres-owncloud.service
-Requires=etcd.service docker.service
+BindsTo=postgres-owncloud.service irods-rest.service
+Requires=etcd.service docker.service irods-rest.service postgres-owncloud.service
+After=irods-rest.service postgres-owncloud.service
 
 [Service]
 TimeoutStartSec=0

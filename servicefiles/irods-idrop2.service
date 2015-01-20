@@ -1,6 +1,8 @@
 [Unit]
 Description=irods-idrop2
 BindsTo=irods-icat.service
+Requires=irods-icat.service
+After=irods-icat.service
 
 [Service]
 TimeoutStartSec=0
