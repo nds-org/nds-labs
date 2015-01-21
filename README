@@ -101,6 +101,11 @@ variables they take, examine the dockerfile for ENV lines.
  * webserve
  * ytwebapp
 
+Each service can be disabled using *fleetctl*:
+ 
+ $ fleetctl stop proxy.service
+ $ fleetctl destroy proxy.service
+
 Special Services
 ----------------
 
