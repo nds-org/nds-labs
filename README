@@ -97,6 +97,7 @@ variables they take, examine the dockerfile for ENV lines.
  * rabbitmq
  * webserve
  * ytwebapp
+ * scidrive (planned, not yet implemented)
 
 Special Services
 ----------------
@@ -115,3 +116,33 @@ servicefile as %i.  It then downloads the image nds-labs/%i , executes it, and
 sets up an http proxy from the public IP address to the appropriate internal IP
 address.  At the public IP, under the suburl nds-explorer, it will now serve
 the content of that container.
+
+Configuration Variables
+-----------------------
+
+Below is a selection of environment variables that relate to configuration
+settings for the services.  Not all will need to be changed; in fact, at a bare
+minimum, none of them need to be changed.
+
+To change an environment variable, modify the contents of
+docker-launcher/production.env .
+
+ * IRODS_DATADIR defaults to /tempZone/home/rods/data .  What is the location,
+   in iRODS-space, of the data to be made available?
+ * irodspassword defaults to testpassword and is the password for the irods
+   postgres database.
+ * irodsresc defaults to defaultResc and is the resource on which files will be
+   created, by default.
+ * irodszone defaults to tempZone and is the iRODS Zone to be used.
+ * kemail defaults to nn@your.kallithea.server and is the email address
+   Kallithea will use for logging and reporting.
+ * keyforagent defaults to temp_32_byte_key_for_agent__conn and is the key used
+   in the iRODS setup.
+ * kpass defaults to simple_password and is the administrative password for
+   Kallithea.
+ * localzonesid defaults to TEMP_LOCAL_ZONE_SID and is the zone SID for iRODS
+   setup.
+ * owncloudpassword defaults to testpassword and is the password for admin on
+   ownCloud.
+ * ytfidopassword defaults to 3nthr0py and is the password for the ytfido user
+   account on iRODS.
