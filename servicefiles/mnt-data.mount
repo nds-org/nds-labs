@@ -2,7 +2,7 @@
 Description=irods volume
 
 [Mount]
-What=UUID="cfc54293-a5a6-4b2b-a6eb-c66b252ba667"
+What=UUID="3a023ebe-fce2-4bd6-96ee-16db54d882cf"
 Where=/mnt/data
 Type=ext4
 
