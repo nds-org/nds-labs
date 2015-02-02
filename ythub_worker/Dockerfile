@@ -27,5 +27,6 @@ RUN bash /tmp/irods-fuse.sh
 RUN curl -O https://bitbucket.org/nds-org/yt_webapp/raw/master/rest2/requirements.txt && \ 
     pip install -r requirements.txt && rm -rf requirements.txt
 
+RUN chown user:docker -R /home/user
 VOLUME ["/tmp"]
 CMD supervisord -n -c /etc/supervisord.conf
