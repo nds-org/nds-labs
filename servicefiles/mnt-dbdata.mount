@@ -2,7 +2,7 @@
 Description=db volume
 
 [Mount]
-What=UUID="7813988e-975e-45cf-8adb-febb8e2314b5"
+What=UUID="96712e17-0fcc-4a42-9561-9b3c17df7fa7"
 Where=/mnt/dbdata
 Type=ext4
 

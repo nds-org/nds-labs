@@ -2,6 +2,7 @@
 Description=Set etcd for owncloud
 BindsTo=owncloud.service
 After=owncloud.service
+Requires=owncloud.service etcd.service
 
 [Service]
 EnvironmentFile=/etc/environment
