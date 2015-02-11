@@ -1,0 +1,19 @@
+[Unit]
+Description=phabricator
+Requires=etcd.service
+Before=phabricator-sidekick.service
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+EnvironmentFile=/etc/hubenv
+ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f phab > /dev/null ; true"
+ExecStartPre=/usr/bin/docker pull xarthisius/phabricator
+ExecStart=/usr/bin/docker run --env-file=/etc/hubenv -h phab --name phab xarthisius/phabricator
+ExecStop=/usr/bin/docker kill phab
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=elastic_ip=false
