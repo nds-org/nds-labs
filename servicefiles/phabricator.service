@@ -9,7 +9,7 @@ EnvironmentFile=/etc/environment
 EnvironmentFile=/etc/hubenv
 ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f phab > /dev/null ; true"
 ExecStartPre=/usr/bin/docker pull xarthisius/phabricator
-ExecStart=/usr/bin/docker run --env-file=/etc/hubenv -h phab --name phab xarthisius/phabricator
+ExecStart=/usr/bin/docker run --env-file=/etc/hubenv -p 80 -h phab --name phab xarthisius/phabricator
 ExecStop=/usr/bin/docker kill phab
 
 [Install]

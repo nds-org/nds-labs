@@ -22,6 +22,7 @@ ADD ./000-default.conf /etc/apache2/sites-available/000-default.conf
 ADD ./my.cnf /etc/mysql/my.cnf
 ADD ./run.sh /usr/local/bin/run.sh
 ADD ./phd.conf /etc/supervisor/conf.d/phd.conf
+ADD ./supervisord.conf /etc/supervisor/supervisord.conf
 
 ENV PHAB_HOSTNAME=phabricator.nationaldataservice.org
 EXPOSE 80
