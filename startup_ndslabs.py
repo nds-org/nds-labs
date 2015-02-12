@@ -41,28 +41,28 @@ coreos:
         [Service]
         Type=oneshot
         ExecStart=/usr/bin/systemctl enable docker-tcp.socket
-    - name: format-ephemeral.service
+    - name: get-ephemeral.service
       command: start
       content: |
         [Unit]
-        Description=Formats the ephemeral drive
+        Description=Gets the docker drive
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/bin/sh -c "/usr/sbin/wipefs -f $$(blkid -L ephemeral0)"
-        ExecStart=/bin/sh -c "/usr/sbin/mkfs.btrfs -f $$(blkid -L ephemeral0) -L ephemeral0"
+        ExecStartPre=/bin/sh -c "(mkdir /root/.ssh; ssh-keyscan ythub1.ncsa.illinois.edu >> /root/.ssh/known_hosts)"
+        ExecStart=/bin/sh -c "(echo 'lcd /mnt'; echo 'get docker-file'; echo quit)| sftp core@ythub1.ncsa.illinois.edu"
     - name: var-lib-docker.mount
       command: start
       content: |
         [Unit]
         Description=Mount ephemeral to /var/lib/docker
-        Requires=format-ephemeral.service
-        After=format-ephemeral.service
+        Requires=get-ephemeral.service
+        After=get-ephemeral.service
         Before=docker.service
         [Mount]
-        What=LABEL="ephemeral0"
+        What=/mnt/docker-file
         Where=/var/lib/docker
-        Type=btrfs
+        Type=
     - name: format-swap.service
       command: start
       content: |
@@ -86,12 +86,19 @@ write_files:
     permissions: 0644
     owner: root
     content: |
-$envfile''')
+$envfile
+  - path: /root/.ssh/id_rsa
+    permissions: 0600
+    owner: root
+    content: |
+$scponlykey''')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Spawn our coreOS.")
     parser.add_argument('--ssh-key', action='store', dest='ssh_key',
                         default="/home/mturk/core.pub")
+    parser.add_argument('--scponly-key', action='store', dest='scp_key',
+                        default="scponly.key")
     parser.add_argument('--ssh-key-name', action='store', dest='ssh_key_name',
                         default='core')
     parser.add_argument('--env-file', action='store', dest='env_file',
@@ -138,6 +145,8 @@ if __name__ == "__main__":
         sshkey = fh.read()
     with open(args.env_file, 'r') as fh:
         environ = fh.read()
+    with open(args.scp_key, 'r') as fh:
+        sshid = fh.read()
 
     nt = client.Client(args.openstack_user, args.openstack_pass,
                        args.openstack_tenant, args.openstack_url,
@@ -168,7 +177,8 @@ if __name__ == "__main__":
             fh.write(CLOUD_CONFIG.substitute(etcd=str(args.etcd_token),
                                              sshkey="%s" % sshkey,
                                              ip_info=ip_info,
-                                             envfile=environ))
+                                             envfile=environ,
+                                             scponlykey=sshid))
         print "etcd token is", args.etcd_token
         print "Creating ", n
         instance = nt.servers.create(
