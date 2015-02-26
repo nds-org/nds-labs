@@ -1,0 +1,26 @@
+[Unit]
+Description=irods-rest
+BindsTo=irods-icat.service mnt-data.mount
+Requires=etcd.service docker.service mnt-data.mount irods-icat.service
+Before=irods-rest-sidekick.service
+After=irods-icat.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f irodsrest > /dev/null ; true"
+ExecStartPre=/usr/bin/docker pull ndslabs/irods-rest
+ExecStart=/usr/bin/docker run \
+     --name irodsrest \
+     --link icat1:icat1 \
+     -v /mnt/data:/mnt/data \
+     -p 80 \
+     -p 443 \
+     ndslabs/irods-rest
+ExecStop=/usr/bin/docker stop -t 5 irodsrest
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineOf=irods-icat.service
+MachineMetadata=mounts=true

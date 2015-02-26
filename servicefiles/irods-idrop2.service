@@ -1,0 +1,25 @@
+[Unit]
+Description=irods-idrop2
+BindsTo=irods-icat.service mnt-data.mount
+Requires=etcd.service docker.service mnt-data.mount irods-icat.service
+Before=irods-rest-sidekick.service
+After=irods-icat.service
+
+[Service]
+TimeoutStartSec=0
+ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f idrop1 > /dev/null ; true"
+ExecStartPre=/usr/bin/docker pull ndslabs/irods-idrop2
+ExecStart=/usr/bin/docker run \
+     --name idrop1 \
+     --link icat1:icat1 \
+     -v /mnt/data:/mnt/data \
+     -p 80 -p 443 \
+     ndslabs/irods-idrop2
+ExecStop=/usr/bin/docker stop -t 5 idrop1
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineOf=irods-icat.service
+MachineMetadata=mounts=true

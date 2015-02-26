@@ -1,0 +1,13 @@
+[Unit]
+Description=db volume
+
+[Mount]
+What=UUID="96712e17-0fcc-4a42-9561-9b3c17df7fa7"
+Where=/mnt/dbdata
+Type=ext4
+
+[Install]
+WantedBy=multi-user.target
+
+[X-Fleet]
+MachineMetadata=mounts=true
