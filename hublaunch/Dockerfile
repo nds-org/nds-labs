@@ -30,37 +30,37 @@ RUN bash /tmp/irods-fuse.sh
 RUN cd /tmp && \
     hg clone -r stable http://bitbucket.org/yt_analysis/yt && \
     pushd yt &> /dev/null && \
+    sed -i -e 's:/does/not/exist:/mnt/data:' /tmp/yt/yt/config.py && \
     python2.7 setup.py install && \
     popd &> /dev/null \
     rm -rf yt
 
 # ThingKing
-RUN pip install thingking darksky_catalog
+RUN pip install thingking darksky_catalog fs pyoai
 
+# Set default backend to Agg
+RUN sed -i -e '/^backend/ s/TkAgg/Agg/g' /etc/matplotlibrc
+
+RUN pip install astropy scikit-learn
+
+RUN apt-get install -y davfs2 && usermod -aG davfs2 user && chmod +s /sbin/mount.davfs && \
+    echo "http://labs.nationaldataservice.org/owncloud/remote.php/webdav /home/user/work davfs user,rw,noauto 0 0" \
+    >> /etc/fstab
+
+RUN mkdir /mnt/data && chown user:root /mnt/data &&  mkdir /results && chown user:root /results && \
+    mkdir -p /home/user/work && chown user:root /home/user/work
 ADD ./setup_irods.py /usr/local/bin/setup_irodsuser
+ADD ./ideals.py /usr/local/lib/python2.7/dist-packages/ideals.py
 RUN chmod +x /usr/local/bin/setup_irodsuser
 
 # IPython
 ADD ./ipython-conf.tgz /home/user/
 RUN chown -R user /home/user/
+
 ENV IPYTHONDIR /home/user/ipython-conf
-
-# Set default backend to Agg
-RUN sed -i -e '/^backend/ s/TkAgg/Agg/g' /etc/matplotlibrc
-
-# Install MathJax
-RUN python2.7 -c "from IPython.external import mathjax; mathjax.install_mathjax()"
-
-RUN pip install astropy scikit-learn
-
-RUN mkdir /mnt/data && chown user:root /mnt/data
-RUN mkdir /results && chown user:root /results
-RUN mkdir -p /home/user/work && chown user:root /home/user/work
-
-RUN apt-get install -y davfs2
-RUN usermod -aG davfs2 user
-RUN chmod +s /sbin/mount.davfs
-RUN echo "http://labs.nationaldataservice.org/owncloud/remote.php/webdav /home/user/work davfs user,rw,noauto 0 0" \
-    >> /etc/fstab
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
 
 USER user
+# Install MathJax
+RUN python2.7 -c "from IPython.external import mathjax; mathjax.install_mathjax()"
