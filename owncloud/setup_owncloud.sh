@@ -1,19 +1,22 @@
 #!/bin/bash
 
+if [ ! -e /var/www/owncloud/config/config.php ] ; then
 cat >> /var/www/owncloud/config/autoconfig.php << EOF
 <?php
 \$AUTOCONFIG = array (
   'directory' => '/var/www/owncloud/data',
   'dbtype' => 'pgsql',
   'dbname' => 'owncloud',
-  'dbhost' => 'db2',
+  'dbhost' => '${ocdbhost}',
   'dbtableprefix' => 'oc_',
   'dbuser' => 'ocadmin',
   'dbpass' => '${owncloudpassword}',
   'installed' => false,
 );
 EOF
+fi
 
+if [ ! -e /var/www/owncloud/config/nds.config.php ] ; then 
 cat >> /var/www/owncloud/config/nds.config.php << EOF
 <?php
 \$CONFIG = array (
@@ -31,5 +34,7 @@ cat >> /var/www/owncloud/config/nds.config.php << EOF
   ),
 );
 EOF
+fi
 
-/sbin/my_init
+chown www-data:www-data -R /var/www/owncloud
+supervisorctl start apache2
