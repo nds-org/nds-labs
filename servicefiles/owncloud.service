@@ -9,13 +9,15 @@ Before=owncloud-sidekick.service
 TimeoutStartSec=0
 EnvironmentFile=/etc/environment
 ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f owncloud1 > /dev/null ; true"
-ExecStartPre=/usr/bin/docker pull ndslabs/owncloud
+ExecStartPre=/usr/bin/docker pull ndslabs/owncloud:8.0.2
 ExecStart=/usr/bin/docker run \
-    --name owncloud1 \
     -p 80 \
     --link db2:db2 \
     --link irodsrest:irodsrest \
-    ndslabs/owncloud
+    -v /mnt/data/owncloud/config:/var/www/owncloud/config \
+    -v /mnt/data/owncloud/data:/var/www/owncloud/data \
+    --name owncloud1 \
+    ndslabs/owncloud:8.0.2
 ExecStop=/usr/bin/docker stop -t 5 owncloud1
 
 [X-Fleet]
