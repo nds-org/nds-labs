@@ -23,6 +23,7 @@ EOF
 git clone https://github.com/iychoi/iRODS-FUSE-Mod.git
 pushd iRODS-FUSE-Mod &> /dev/null
 git checkout 814c8363a8f965fb65a3a400150ec257e8763b2f
+adduser docker
 chown -R docker:root ../iRODS-FUSE-Mod
 
 sudo -u docker ./irodssetup < ../irods_setup
