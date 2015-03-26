@@ -1,29 +1,27 @@
-FROM ubuntu:14.04
-MAINTAINER jkastner@ncsa.illinois.edu
+FROM debian:sid
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Install packages
-RUN apt-get -y update && apt-get install -y wget git
+RUN apt-get -qqy update && apt-get install -qqy wget \
+     python-dev python-pip git libssl-dev supervisor \
+     python-setuptools python-numpy python-tz \
+     python-h5py python-requests python-twisted python-tornado && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Set locale
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
-
-# Install and setup minimal Anaconda Python dist
-RUN wget http://repo.continuum.io/miniconda/Miniconda-3.9.1-Linux-x86_64.sh -O miniconda.sh
-RUN bash miniconda.sh -b -p /anaconda && rm miniconda.sh
-ENV PATH /anaconda/bin:$PATH
-
-# For image inheritence
-#ONBUILD ENV PATH /anaconda/bin:$PATH
-
-# Install some h5serv dependencies
-RUN conda create -n h5serv python=2.7 h5py twisted tornado requests pytz
+# add a user
+RUN useradd -D --shell=/bin/bash && \
+    useradd -m user && \
+    echo "user:secret" | chpasswd
 
 # git h5serve source tree
-RUN git clone https://github.com/HDFGroup/h5serv.git h5serv
-RUN python /h5serv/server/app.py
-RUN python /h5serv/test/testall.py
+RUN cd /home/user && \
+   git clone https://github.com/HDFGroup/h5serv.git h5serv && \
+   chown user:user -R /home/user
+
+ADD ./supervisord.conf /etc/supervisord.conf
+ADD ./main.conf /etc/supervisor/conf.d/main.conf
+
+EXPOSE 5000
+
+CMD supervisord -n -c /etc/supervisord.conf
