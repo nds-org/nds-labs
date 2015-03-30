@@ -24,4 +24,6 @@ ADD ./main.conf /etc/supervisor/conf.d/main.conf
 
 EXPOSE 5000
 
+VOLUME ["/home/user/h5serv/data"]
+
 CMD supervisord -n -c /etc/supervisord.conf
