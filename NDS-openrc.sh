@@ -15,7 +15,7 @@ export OS_TENANT_ID=f98db258120c4948b192ba52aee67f5a
 export OS_TENANT_NAME="NDS"
 
 # In addition to the owning entity (tenant), openstack stores the entity
-# performing the action as the **user**.
+# performing the action as the **user**..
 export OS_USERNAME="mfreemon"
 
 # With Keystone you pass the keystone password.
