@@ -21,3 +21,4 @@ python startup_ndslabs.py \
  --image-id a8839020-cb32-46c7-b0d4-882c5315dc22 \
  --flavor-id 02a02a3c-d0b4-4bd1-9933-bb4391ad10b2 \
  --ssh-key-name mfreemon-at-shark
+
