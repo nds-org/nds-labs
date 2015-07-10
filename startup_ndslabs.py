@@ -147,6 +147,11 @@ if __name__ == "__main__":
     else:
         sys.exit("environment file (%s) does not exist. Set environment file with: --env-file ENV_FILE" % args.env_file)
 
+    if args.openstack_user is None or args.openstack_pass is None or args.openstack_tenant is None or args.openstack_url is None:
+        sys.exit("openstack-user, openstack-pass, openstack-tenant and/or openstack-url not set. "
+                 "Check your OpenStack environment variables or set the options via the "
+                 "commandline. Run with -h for more details.")
+
     nt = client.Client(args.openstack_user, args.openstack_pass,
                        args.openstack_tenant, args.openstack_url,
                        service_type="compute")
