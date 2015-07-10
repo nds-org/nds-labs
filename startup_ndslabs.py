@@ -4,6 +4,7 @@ import os
 import sys
 import requests
 from string import Template
+import novaclient
 from novaclient.v1_1 import client
 
 CLOUD_CONFIG = Template('''#cloud-config
@@ -183,6 +184,12 @@ if __name__ == "__main__":
                                              ip_info=ip_info,
                                              envfile=environ))
         print "etcd token is", args.etcd_token
+
+        try:
+            nt.flavors.find(id=args.flavor_id)
+        except novaclient.exceptions.NotFound as e:
+            sys.exit("Flavor id \"%s\" not found" % args.flavor_id)
+
         print "Creating ", n
         instance = nt.servers.create(
             "coreos_%s" % args.cluster_name,
