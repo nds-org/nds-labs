@@ -189,19 +189,19 @@ if __name__ == "__main__":
         try:
             nt.flavors.find(id=args.flavor_id)
         except novaclient.exceptions.NotFound as e:
-            sys.exit("Flavor id \"%s\" not found" % args.flavor_id)
+            sys.exit("Flavor id \"%s\" not found. Set flavor-id with: --flavor-id id" % args.flavor_id)
 
         # Verify image exists in OpenStack
         try:
             nt.images.find(id=args.image_id)
         except novaclient.exceptions.NotFound as e:
-            sys.exit("Image id \"%s\" not found" % args.image_id)
+            sys.exit("Image id \"%s\" not found. Set image-id with: --image-id id" % args.image_id)
 
         # Verify network exists in OpenStack
         try:
             nt.networks.find(id=args.net_id)
         except novaclient.exceptions.NotFound as e:
-            sys.exit("Network id \"%s\" not found" % args.net_id)
+            sys.exit("Network id \"%s\" not found. Set net-id with: --net-id id" % args.net_id)
 
         print "Creating ", n
         instance = nt.servers.create(
