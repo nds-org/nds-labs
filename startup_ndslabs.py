@@ -185,10 +185,17 @@ if __name__ == "__main__":
                                              envfile=environ))
         print "etcd token is", args.etcd_token
 
+        # Verify flavor exists in OpenStack
         try:
             nt.flavors.find(id=args.flavor_id)
         except novaclient.exceptions.NotFound as e:
             sys.exit("Flavor id \"%s\" not found" % args.flavor_id)
+
+        # Verify image exists in OpenStack
+        try:
+            nt.images.find(id=args.image_id)
+        except novaclient.exceptions.NotFound as e:
+            sys.exit("Image id \"%s\" not found" % args.image_id)
 
         print "Creating ", n
         instance = nt.servers.create(
