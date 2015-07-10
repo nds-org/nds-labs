@@ -226,13 +226,36 @@ if __name__ == "__main__":
                 time.sleep(10)
                 instance = nt.servers.get(instance.id)
 
-            # 3rd argument is unfortunately bogus...
-            nt.volumes.create_server_volume(
-                instance.id, args.dbvol_id, '/dev/vdd')
-            nt.volumes.create_server_volume(
-                instance.id, args.icatvol_id, '/dev/vde')
-            nt.volumes.create_server_volume(
-                instance.id, args.moinmoinvol_id, '/dev/vdf')
+            # Try to mount dbvol-id
+            try:
+                # 3rd argument is unfortunately bogus...
+                nt.volumes.create_server_volume(
+                    instance.id, args.dbvol_id, '/dev/vdd')
+            except novaclient.exceptions.NotFound as e:
+                sys.exit("dbvol-id \"%s\" not found. Set dbvol-id with: --dbvol-id id" % args.dbvol_id)
+            except novaclient.exceptions.BadRequest as e:
+                sys.exit("dbvol-id BadRequest: %s" % e.message)
+
+            # Try to mount icatvol-id
+            try:
+                # 3rd argument is unfortunately bogus...
+                nt.volumes.create_server_volume(
+                    instance.id, args.icatvol_id, '/dev/vde')
+            except novaclient.exceptions.NotFound as e:
+                sys.exit("icatvol-id \"%s\" not found. Set icatvol-id with: --icatvol-id id" % args.icatvol_id)
+            except novaclient.exceptions.BadRequest as e:
+                sys.exit("icatvol-id BadRequest: %s" % e.message)
+
+            # Try to mount moinmoinvol-id 
+            try:
+                # 3rd argument is unfortunately bogus...
+                nt.volumes.create_server_volume(
+                    instance.id, args.moinmoinvol_id, '/dev/vdf')
+            except novaclient.exceptions.NotFound as e:
+                sys.exit("moinmoin-id \"%s\" not found. Set moinmoin-id with: --moinmoin-id id" % args.moinmoinvol_id)
+            except novaclient.exceptions.BadRequest as e:
+                sys.exit("moinmoin-id BadRequest: %s" % e.message)
+
             thismount = False
         if public:
             if args.desired_ip is None:
