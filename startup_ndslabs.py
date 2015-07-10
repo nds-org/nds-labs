@@ -221,8 +221,11 @@ if __name__ == "__main__":
             nics=[{"net-id": args.net_id}]
         )
         if mounts:
-            print "Sleeping 60 seconds to allow VM to build..."
-            time.sleep(60)
+            while instance.status != 'ACTIVE':
+                print "%s Instance status: %s" % (time.strftime('%H:%M:%S'), instance.status)
+                time.sleep(10)
+                instance = nt.servers.get(instance.id)
+
             # 3rd argument is unfortunately bogus...
             nt.volumes.create_server_volume(
                 instance.id, args.dbvol_id, '/dev/vdd')
