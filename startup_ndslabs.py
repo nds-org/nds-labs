@@ -203,6 +203,12 @@ if __name__ == "__main__":
         except novaclient.exceptions.NotFound as e:
             sys.exit("Network id \"%s\" not found. Set net-id with: --net-id id" % args.net_id)
 
+        # Verify ssh_key_name exists in OpenStack
+        try:
+            nt.keypairs.get(args.ssh_key_name)
+        except novaclient.exceptions.NotFound as e:
+            sys.exit("SSH key name \"%s\" not found. Set ssh-key-name with: --ssh-key-name SSH_KEY_NAME" % args.ssh_key_name)
+
         print "Creating ", n
         instance = nt.servers.create(
             "coreos_%s" % args.cluster_name,
