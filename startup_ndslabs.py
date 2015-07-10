@@ -197,6 +197,12 @@ if __name__ == "__main__":
         except novaclient.exceptions.NotFound as e:
             sys.exit("Image id \"%s\" not found" % args.image_id)
 
+        # Verify network exists in OpenStack
+        try:
+            nt.networks.find(id=args.net_id)
+        except novaclient.exceptions.NotFound as e:
+            sys.exit("Network id \"%s\" not found" % args.net_id)
+
         print "Creating ", n
         instance = nt.servers.create(
             "coreos_%s" % args.cluster_name,
