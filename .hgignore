@@ -6,3 +6,4 @@ secring.gpg
 hublaunch/ipython-conf.tgz
 nds-explorer/nds-explorer
 nds-explorer/dist.tar.gz
+.idea/  

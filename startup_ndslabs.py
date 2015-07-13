@@ -1,8 +1,10 @@
 import argparse
 import time
 import os
+import sys
 import requests
 from string import Template
+import novaclient
 from novaclient.v1_1 import client
 
 CLOUD_CONFIG = Template('''#cloud-config
@@ -134,10 +136,22 @@ if __name__ == "__main__":
                         default='7d41966f-dedd-4b3a-b56f-dfd0c604e8f5')
     args = parser.parse_args()
 
-    with open(args.ssh_key, 'r') as fh:
-        sshkey = fh.read()
-    with open(args.env_file, 'r') as fh:
-        environ = fh.read()
+    if os.path.exists(args.ssh_key):
+        with open(args.ssh_key, 'r') as fh:
+            sshkey = fh.read()
+    else:
+        sys.exit("ssh-key (%s) does not exist. Set ssh-key with: --ssh-key SSH_KEY" % args.ssh_key)
+
+    if os.path.exists(args.env_file):
+        with open(args.env_file, 'r') as fh:
+            environ = fh.read()
+    else:
+        sys.exit("environment file (%s) does not exist. Set environment file with: --env-file ENV_FILE" % args.env_file)
+
+    if args.openstack_user is None or args.openstack_pass is None or args.openstack_tenant is None or args.openstack_url is None:
+        sys.exit("openstack-user, openstack-pass, openstack-tenant and/or openstack-url not set. "
+                 "Check your OpenStack environment variables or set the options via the "
+                 "commandline. Run with -h for more details.")
 
     nt = client.Client(args.openstack_user, args.openstack_pass,
                        args.openstack_tenant, args.openstack_url,
@@ -174,6 +188,31 @@ if __name__ == "__main__":
                                              ip_info=ip_info,
                                              envfile=environ))
         print "etcd token is", args.etcd_token
+
+        # Verify flavor exists in OpenStack
+        try:
+            nt.flavors.find(id=args.flavor_id)
+        except novaclient.exceptions.NotFound as e:
+            sys.exit("Flavor id \"%s\" not found. Set flavor-id with: --flavor-id id" % args.flavor_id)
+
+        # Verify image exists in OpenStack
+        try:
+            nt.images.find(id=args.image_id)
+        except novaclient.exceptions.NotFound as e:
+            sys.exit("Image id \"%s\" not found. Set image-id with: --image-id id" % args.image_id)
+
+        # Verify network exists in OpenStack
+        try:
+            nt.networks.find(id=args.net_id)
+        except novaclient.exceptions.NotFound as e:
+            sys.exit("Network id \"%s\" not found. Set net-id with: --net-id id" % args.net_id)
+
+        # Verify ssh_key_name exists in OpenStack
+        try:
+            nt.keypairs.get(args.ssh_key_name)
+        except novaclient.exceptions.NotFound as e:
+            sys.exit("SSH key name \"%s\" not found. Set ssh-key-name with: --ssh-key-name SSH_KEY_NAME" % args.ssh_key_name)
+
         print "Creating ", n
         instance = nt.servers.create(
             "coreos_%s" % args.cluster_name,
@@ -186,15 +225,41 @@ if __name__ == "__main__":
             nics=[{"net-id": args.net_id}]
         )
         if mounts:
-            print "Sleeping 60 seconds to allow VM to build..."
-            time.sleep(60)
-            # 3rd argument is unfortunately bogus...
-            nt.volumes.create_server_volume(
-                instance.id, args.dbvol_id, '/dev/vdd')
-            nt.volumes.create_server_volume(
-                instance.id, args.icatvol_id, '/dev/vde')
-            nt.volumes.create_server_volume(
-                instance.id, args.moinmoinvol_id, '/dev/vdf')
+            while instance.status != 'ACTIVE':
+                print "%s Instance status: %s" % (time.strftime('%H:%M:%S'), instance.status)
+                time.sleep(10)
+                instance = nt.servers.get(instance.id)
+
+            # Try to mount dbvol-id
+            try:
+                # 3rd argument is unfortunately bogus...
+                nt.volumes.create_server_volume(
+                    instance.id, args.dbvol_id, '/dev/vdd')
+            except novaclient.exceptions.NotFound as e:
+                sys.exit("dbvol-id \"%s\" not found. Set dbvol-id with: --dbvol-id id" % args.dbvol_id)
+            except novaclient.exceptions.BadRequest as e:
+                sys.exit("dbvol-id BadRequest: %s" % e.message)
+
+            # Try to mount icatvol-id
+            try:
+                # 3rd argument is unfortunately bogus...
+                nt.volumes.create_server_volume(
+                    instance.id, args.icatvol_id, '/dev/vde')
+            except novaclient.exceptions.NotFound as e:
+                sys.exit("icatvol-id \"%s\" not found. Set icatvol-id with: --icatvol-id id" % args.icatvol_id)
+            except novaclient.exceptions.BadRequest as e:
+                sys.exit("icatvol-id BadRequest: %s" % e.message)
+
+            # Try to mount moinmoinvol-id 
+            try:
+                # 3rd argument is unfortunately bogus...
+                nt.volumes.create_server_volume(
+                    instance.id, args.moinmoinvol_id, '/dev/vdf')
+            except novaclient.exceptions.NotFound as e:
+                sys.exit("moinmoin-id \"%s\" not found. Set moinmoin-id with: --moinmoin-id id" % args.moinmoinvol_id)
+            except novaclient.exceptions.BadRequest as e:
+                sys.exit("moinmoin-id BadRequest: %s" % e.message)
+
             thismount = False
         if public:
             if args.desired_ip is None:
