@@ -1,7 +1,8 @@
 [Unit]
 Description=Set etcd for irods-idrop2
 BindsTo=irods-idrop2.service
-After=irods-idrop2.service
+Requires=irods-idrop2.service etcd.service
+After=irods-idrop2.service etcd.service
 
 [Service]
 EnvironmentFile=/etc/environment

@@ -1,0 +1,25 @@
+[Unit]
+Description=Docker Image Cache
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/docker pull ndslabs/curldrop
+ExecStart=/usr/bin/docker pull ndslabs/irods-rest
+ExecStart=/usr/bin/docker pull ndslabs/kallithea
+ExecStart=/usr/bin/docker pull ndslabs/moinmoin-wiki:standalone
+ExecStart=/usr/bin/docker pull ndslabs/nginx
+ExecStart=/usr/bin/docker pull ndslabs/ythub_worker
+ExecStart=/usr/bin/docker pull ndslabs/hublaunch
+ExecStart=/usr/bin/docker pull ndslabs/devenv
+ExecStart=/usr/bin/docker pull ndslabs/rstudio
+ExecStart=/usr/bin/docker pull ndslabs/nds-explorer
+ExecStart=/usr/bin/docker pull ndslabs/proxy
+ExecStart=/usr/bin/docker pull ndslabs/rabbitmq-etcd
+ExecStart=/usr/bin/docker pull ndslabs/proxy
+ExecStart=/usr/bin/docker pull ndslabs/postgres-owncloud
+ExecStart=/usr/bin/docker pull ndslabs/postgres-icat
+ExecStart=/usr/bin/docker pull ndslabs/owncloud
+ExecStart=/usr/bin/docker pull ndslabs/ythub_worker
+
+[X-Fleet]
+Global=true

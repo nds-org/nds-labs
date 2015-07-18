@@ -25,7 +25,7 @@ RUN pip install python-etcd
 
 #set up supervisor
 RUN mkdir -p /var/log/supervisor
-ADD ./common/supervisord.conf.etc /etc/supervisor/supervisord.conf
+ADD ./main.conf /etc/supervisor/supervisord.conf
 ADD ./common/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # set up an admin user

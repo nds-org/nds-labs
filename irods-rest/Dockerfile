@@ -27,7 +27,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server \
 
 #set up supervisor
 RUN mkdir -p /var/log/supervisor
-ADD ./common/supervisord.conf.etc /etc/supervisor/supervisord.conf
+ADD ./supervisord.conf /etc/supervisor/supervisord.conf
 ADD ./common/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # set up an admin user

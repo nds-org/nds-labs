@@ -43,7 +43,10 @@ containers is as follows:
  2. Read over the output of:
     $ python2.7 startup_ndslabs.py --help
  3. Run the startup script with the appropriate options.
- 4. Spawn the appropriate servicefiles using fleetctl
+ 4. Spawn the appropriate servicefiles using fleetctl:
+    $ cd servicefiles
+    $ fleetctl load *.{mount,service}
+    $ fleetctl start *.{mount,service}
 
 Each of the options to startup_ndslabs.py is documented.  A typical invocation
 will specify Openstack volumes to mount, the SSH key to use, a name, and a
@@ -98,6 +101,11 @@ variables they take, examine the dockerfile for ENV lines.
  * webserve
  * ytwebapp
  * scidrive (planned, not yet implemented)
+
+Each service can be disabled using *fleetctl*:
+ 
+ $ fleetctl stop proxy.service
+ $ fleetctl destroy proxy.service
 
 Special Services
 ----------------

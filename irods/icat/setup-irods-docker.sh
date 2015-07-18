@@ -34,7 +34,7 @@ echo "xmsgPort 1235" >> /etc/irods/server.config
 touch /etc/irods/NDS.re
 chown irods:irods /etc/irods/NDS.re
 chmod 600 /etc/irods/NDS.re
-sed -i 's/reRuleSet   core/reRuleSet   NDS,core' /etc/irods/server.config
+sed -i 's/reRuleSet   core/reRuleSet   NDS,core/' /etc/irods/server.config
 
 sleep 2
 sudo -u irods -i iadmin rmresc demoResc 

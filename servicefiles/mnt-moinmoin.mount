@@ -2,7 +2,7 @@
 Description=moin moin volume
 
 [Mount]
-What=UUID="cb4a119c-6b3d-41a9-a07b-c4e546d465dc"
+What=UUID="40b31b9a-8970-4e10-aed5-a5e7f28af640"
 Where=/mnt/moinmoin
 Type=ext4
 

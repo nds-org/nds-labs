@@ -7,6 +7,19 @@ import urlparse
 import json
 from pwd import getpwnam
 
+
+def mount_ideals():
+    from ideals import IDEALSFilesystem
+    import fs
+    base_fs = fs.mountfs.MountFS()
+    ifs = IDEALSFilesystem(base_fs)
+    base_fs.mountdir("", ifs)
+    xl_fn = "/Connecting to Collections/Arizona Survey Raw Data/AZ+Raw+Data.xls"
+    mp = fs.expose.fuse.mount(base_fs, "/home/user/work/ideals/",
+                              foreground=True)
+    os._exit(0)
+
+
 user = getpwnam("user")
 uhome = user.pw_dir
 uuid = user.pw_uid
@@ -48,13 +61,17 @@ if None not in (pw, host, user):
         os.mkdir("/home/user/work")
     # Now we mount our WebDAV host using davfs2
     with open("/home/user/.davfs2/secrets", "w") as f:
-        f.write("/home/user/work %s \"%s\"\n" % (
-            user.replace("#","\\#"), pw))
+        f.write("/home/user/work %s \"%s\"\n" %
+                (user.replace("#", "\\#"), pw))
     with open("/home/user/.davfs2/davfs2.conf", "w") as f:
         f.write("use_locks 0\n")
     subprocess.call("chmod 600 /home/user/.davfs2/secrets", shell=True)
     cmd = "mount /home/user/work"
     subprocess.call(cmd, shell=True)
+    if os.environ.get('MOUNT_IDEALS', 'NO') == "YES":
+        newpid = os.fork()
+        if newpid == 0:
+            mount_ideals()
 
 os.chdir(cwd)
 if len(sys.argv) == 2:

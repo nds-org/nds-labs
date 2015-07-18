@@ -30,9 +30,3 @@ VOLUME ["/mnt/uploads"]
 EXPOSE 8888
 
 CMD ["python", "/tmp/curldrop-master/runcurldrop.py"]
-
-#set up supervisor
-# RUN mkdir -p /var/log/supervisor
-# ADD ./common/supervisord.conf.etc /etc/supervisor/supervisord.conf
-# ADD ./common/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
