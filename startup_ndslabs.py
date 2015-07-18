@@ -156,6 +156,10 @@ if __name__ == "__main__":
     nt = client.Client(args.openstack_user, args.openstack_pass,
                        args.openstack_tenant, args.openstack_url,
                        service_type="compute")
+
+    # ensure authentication succeeds
+    nt.authenticate()
+
     if args.etcd_token is None:
         args.etcd_token = requests.get("https://discovery.etcd.io/new").text
 
