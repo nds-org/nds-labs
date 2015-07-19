@@ -1,5 +1,5 @@
 [Unit]
-Description=Set etcd for irods
+Description=Set etcd for irods-icat
 Requires=irods-icat.service etcd.service
 After=irods-icat.service etcd.service
 BindsTo=irods-icat.service

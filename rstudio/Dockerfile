@@ -6,7 +6,7 @@ ENV IRODS_DATADIR /tempZone/home/rods/data
 RUN apt-get update -qq && \
     DEBIAN_FRONTEND=noninteractive apt-get install -qyy \
     	fuse libfuse-dev git-core ca-certificates libssl-dev \
-	apache2 libapache2-mod-proxy-html libxml2-dev \
+	apache2 apache2-bin libxml2-dev \
     libgdal-dev gdal-bin libproj-dev proj-bin && \ 
     apt-get clean
 

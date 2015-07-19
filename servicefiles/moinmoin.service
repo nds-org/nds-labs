@@ -8,11 +8,11 @@ BindsTo=mnt-moinmoin.mount
 TimeoutStartSec=0
 EnvironmentFile=/etc/environment
 ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f moinmoin > /dev/null ; true"
-ExecStartPre=/usr/bin/docker pull ndslabs/moinmoin-wiki:standalone
+ExecStartPre=/usr/bin/docker pull ndslabs/moinmoin
 ExecStart=/usr/bin/docker run \
     --name moinmoin \
     -p 80 \
-    ndslabs/moinmoin-wiki:standalone
+    ndslabs/moinmoin
 ExecStop=/usr/bin/docker stop -t 5 moinmoin
 
 [X-Fleet]

@@ -1,0 +1,18 @@
+[Unit]
+Description=rstudio
+Requires=etcd.service docker.service irods-icat.service
+After=irods-icat.service
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f rstudio1 > /dev/null ; true"
+ExecStartPre=/usr/bin/docker pull ndslabs/rstudio
+ExecStart=/usr/bin/docker run \
+    --name rstudio1 \
+    ndslabs/rstudio
+ExecStop=/usr/bin/docker stop -t 5 rstudio1
+
+[X-Fleet]
+MachineOf=irods-icat.service
+

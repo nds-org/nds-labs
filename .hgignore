@@ -8,3 +8,4 @@ nds-explorer/nds-explorer
 nds-explorer/dist.tar.gz
 .idea/  
 .directory
+proxy/temp/
