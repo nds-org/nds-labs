@@ -43,28 +43,6 @@ coreos:
         [Service]
         Type=oneshot
         ExecStart=/usr/bin/systemctl enable docker-tcp.socket
-    - name: format-ephemeral.service
-      command: start
-      content: |
-        [Unit]
-        Description=Formats the ephemeral drive
-        [Service]
-        Type=oneshot
-        RemainAfterExit=yes
-        ExecStart=/bin/sh -c "/usr/sbin/wipefs -f $$(blkid -L ephemeral0)"
-        ExecStart=/bin/sh -c "/usr/sbin/mkfs.btrfs -f $$(blkid -L ephemeral0) -L ephemeral0"
-    - name: var-lib-docker.mount
-      command: start
-      content: |
-        [Unit]
-        Description=Mount ephemeral to /var/lib/docker
-        Requires=format-ephemeral.service
-        After=format-ephemeral.service
-        Before=docker.service
-        [Mount]
-        What=LABEL="ephemeral0"
-        Where=/var/lib/docker
-        Type=btrfs
     - name: format-swap.service
       command: start
       content: |
