@@ -9,3 +9,4 @@ nds-explorer/dist.tar.gz
 .idea/  
 .directory
 proxy/temp/
+cloud-config_(True|False).yaml
