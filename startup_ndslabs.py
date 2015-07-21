@@ -73,7 +73,7 @@ if __name__ == "__main__":
     parser.add_argument('--ssh-key', action='store', dest='ssh_key',
                         default="/home/mturk/core.pub")
     parser.add_argument('--ssh-key-name', action='store', dest='ssh_key_name',
-                        default='core')
+                        default='none')
     parser.add_argument('--env-file', action='store', dest='env_file',
                         default='production.env')
     parser.add_argument('--openstack-user', action='store',
@@ -160,6 +160,7 @@ if __name__ == "__main__":
             ip_info += ",mounts=false"
 
         print ip_info
+
         with open('cloud-config_%s.yaml' % public, 'w') as fh:
             fh.write(CLOUD_CONFIG.substitute(etcd=str(args.etcd_token),
                                              sshkey="%s" % sshkey,
@@ -185,11 +186,22 @@ if __name__ == "__main__":
         except novaclient.exceptions.NotFound as e:
             sys.exit("Network id \"%s\" not found. Set net-id with: --net-id id" % args.net_id)
 
-        # Verify ssh_key_name exists in OpenStack
-        try:
-            nt.keypairs.get(args.ssh_key_name)
-        except novaclient.exceptions.NotFound as e:
-            sys.exit("SSH key name \"%s\" not found. Set ssh-key-name with: --ssh-key-name SSH_KEY_NAME" % args.ssh_key_name)
+        # Load ssh key into OpenStack
+	if args.ssh_key_name != "none":
+	    # ssh key name is specified as input -- check that it actually exists
+	    try:
+                nt.keypairs.get(args.ssh_key_name)
+            except novaclient.exceptions.NotFound as e:
+                sys.exit("SSH key name \"%s\" not found. Set ssh-key-name with: --ssh-key-name SSH_KEY_NAME" % args.ssh_key_name)
+	else:
+	    # ssh key name is not specified as input -- generate a name and load it into OpenStack
+	    args.ssh_key_name = "coreos_%s" % args.cluster_name
+	    try:
+	        nt.keypairs.delete(args.ssh_key_name)
+            except novaclient.exceptions.NotFound as e:
+	        pass
+	    nt.keypairs.create(args.ssh_key_name, public_key=sshkey)
+
 
         created_servers = 0
 

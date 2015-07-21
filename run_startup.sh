@@ -20,11 +20,10 @@ python startup_ndslabs.py \
  --total-vms 3 \
  --total-public 1 \
  --name mfreemon \
- --ssh-key $PWD/mfreemon-at-shark-key.pub \
+ --ssh-key $PWD/ssh-key.pub \
  --env-file $PWD/docker-launcher/production.env \
  --region NCSA \
  --net-id 165265ee-d257-43d7-b3b7-e579cd749ed4 \
  --image-id a8839020-cb32-46c7-b0d4-882c5315dc22 \
- --flavor-id 02a02a3c-d0b4-4bd1-9933-bb4391ad10b2 \
- --ssh-key-name mfreemon-at-shark
+ --flavor-id 02a02a3c-d0b4-4bd1-9933-bb4391ad10b2
 
