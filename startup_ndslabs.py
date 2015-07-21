@@ -72,22 +72,34 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Spawn our coreOS.")
     parser.add_argument('--ssh-key', action='store', dest='ssh_key',
                         default="/path/to/core.pub")
+
+    # ssh-key-name is the name (as known by OpenStack) of the key that was added to OpenStack
     parser.add_argument('--ssh-key-name', action='store', dest='ssh_key_name',
                         default='none')
+
     parser.add_argument('--env-file', action='store', dest='env_file',
                         default='production.env')
+
+    # this is passed in via an environment varable set in NDS-openrc.sh
     parser.add_argument('--openstack-user', action='store',
                         dest='openstack_user',
                         default=os.environ.get('OS_USERNAME', None))
+
+    # this is passed in via an environment varable set in NDS-openrc.sh
     parser.add_argument('--openstack-pass', action='store',
                         dest='openstack_pass',
                         default=os.environ.get('OS_PASSWORD', None))
+
+    # this is passed in via an environment varable set in NDS-openrc.sh
     parser.add_argument('--openstack-url', action='store',
                         dest='openstack_url',
                         default=os.environ.get('OS_AUTH_URL', None))
+
+    # this is passed in via an environment varable set in NDS-openrc.sh
     parser.add_argument('--openstack-tenant', action='store',
                         dest='openstack_tenant',
                         default=os.environ.get('OS_TENANT_NAME', None))
+
     parser.add_argument('--total-vms', action='store', type=int,
                         dest='total_vms', default=3)
     parser.add_argument('--total-public', action='store', type=int,
@@ -100,12 +112,28 @@ if __name__ == "__main__":
                         default=None)
     parser.add_argument('--region', action='store', dest='region',
                         default='NCSA')
+
+    # net ids can be looked up with the command:
+    #   nova net-list
+    # the proper value for NCSA VLAD is:
+    # net-id nds_net             165265ee-d257-43d7-b3b7-e579cd749ed4
     parser.add_argument('--net-id', action='store', dest='net_id',
                         default='165265ee-d257-43d7-b3b7-e579cd749ed4')
+
+    # image ids can be looked up with the command:
+    #   nova image-list
+    # a good default for NCSA VLAD is:
+    # image-id coreos 681        a8839020-cb32-46c7-b0d4-882c5315dc22
     parser.add_argument('--image-id', action='store', dest='image_id',
-                        default='fd4d996e-9cf4-42bc-a834-741627b0e499')
+                        default='a8839020-cb32-46c7-b0d4-882c5315dc22')
+
+    # flavor ids can be looked up with the command:
+    #   nova flavor-list
+    # a good default for NCSA VLAD is:
+    # flavor-id s1.medium        02a02a3c-d0b4-4bd1-9933-bb4391ad10b2    
     parser.add_argument('--flavor-id', action='store', dest='flavor_id',
-                        default='7d41966f-dedd-4b3a-b56f-dfd0c604e8f5')
+                        default='02a02a3c-d0b4-4bd1-9933-bb4391ad10b2')
+
     args = parser.parse_args()
 
     if os.path.exists(args.ssh_key):

@@ -1,0 +1,88 @@
+
+This document describes the steps needed to start up a new NDS Labs Environment.
+
+NOTES
+
+* The defaults are set to work on the NCSA VLAD OpenStack cluster.
+
+* All of these steps should be performed from a shell on the 
+  vlad-mgmt.ncsa.illinois.edu node.  This is not a requirement, 
+  but does make some things a bit more convenient.
+
+PREREQUISITES
+
+* OpenStack credentials (userid and password)
+
+PROCEDURE
+
+1.  Generate new key pair (or use an existing one if you prefer)
+
+    ssh-keygen
+
+2.  Start an ssh agent and load the key
+
+    eval $(ssh-agent -s)
+    ssh-add
+
+3.  Clone the nds-labs source code repository
+
+    hg clone https://bitbucket.org/nds-org/nds-labs
+    cd nds-labs
+
+4.  Update OS_USERNAME in script NDS-openrc.sh
+
+    vim NDS-openrc.sh
+
+5.  Copy your public key created in Step 1 to ssh-key.pub
+
+    cp ~/.ssh/id_rsa.pub ssh-key.pub
+
+    This is the key that will be dropped into the authorized_keys files.
+
+6.  Review and update as desired the values in the script run_startup.sh
+
+    Note: The "--name" parameter should definitely be changed to something 
+          uniquely identifable, such as your username.
+
+7.  Execute the startup script
+
+    ./run_startup.py
+
+    You will be asked for your OpenStack password.  This is your NCSA
+    Kerberos password if you are on the VLAD system.
+
+8.  Check for the existance of the fleetctl binary.  If "which fleetctl"
+    comes up empty, just copy the binary (the single file) from any other 
+    machine with it to _this_ machine.
+
+    scp wherever:/usr/bin/fleetctl ~/
+    alias fleetctl='~/fleetctl'        <-- optional, but convenient
+
+9.  Edit setfleet.sh and set the FLEETCTL_TUNNEL to the public IP address 
+    assigned by the startup script in Step 7.
+
+    vim setfleet.sh
+
+10. Source setfleet.sh to set the FLEETCTL environment variables.
+
+    source setfleet.sh
+
+11. Launch the master service.  This starts various services inside the
+    NDS Labs Environment to bring it to a fully funcational state.
+
+    fleetctl start master.service
+    fleetctl status master.service
+
+12. Your NDS Labs Environment is now up and running.
+
+    You can ssh to any of your OpenStack instances:
+    fleetctl list-machines
+    fleetctl ssh <machine-id>
+
+    You can see the status of all the services in your environment:
+    fleetctl list-units
+
+    You can ssh into the master service:
+    ssh -p 80 root@141.142.204.184   <-- the public IP address that was assigned
+
+
