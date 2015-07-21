@@ -71,7 +71,7 @@ $envfile''')
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Spawn our coreOS.")
     parser.add_argument('--ssh-key', action='store', dest='ssh_key',
-                        default="/home/mturk/core.pub")
+                        default="/path/to/core.pub")
     parser.add_argument('--ssh-key-name', action='store', dest='ssh_key_name',
                         default='none')
     parser.add_argument('--env-file', action='store', dest='env_file',
@@ -104,12 +104,6 @@ if __name__ == "__main__":
                         default='165265ee-d257-43d7-b3b7-e579cd749ed4')
     parser.add_argument('--image-id', action='store', dest='image_id',
                         default='fd4d996e-9cf4-42bc-a834-741627b0e499')
-    parser.add_argument('--dbvol-id', action='store', dest='dbvol_id',
-                        default='e5b37fd8-1d7f-49f3-95bb-6c3127ee7199')
-    parser.add_argument('--icatvol-id', action='store', dest='icatvol_id',
-                        default='b89e0b67-9e93-4ab1-8e45-919a61c17e66')
-    parser.add_argument('--moinmoin-id', action='store', dest='moinmoinvol_id',
-                        default='1b74658a-9638-4db6-b7f3-1c2211f3776b')
     parser.add_argument('--flavor-id', action='store', dest='flavor_id',
                         default='7d41966f-dedd-4b3a-b56f-dfd0c604e8f5')
     args = parser.parse_args()
@@ -221,43 +215,12 @@ if __name__ == "__main__":
 
             print "Instance ID: %s" % instance.id
 
-            if mounts:
-                while instance.status != 'ACTIVE':
-                    print "%s Instance status: %s" % (time.strftime('%H:%M:%S'), instance.status)
-                    time.sleep(10)
-                    instance = nt.servers.get(instance.id)
+            # keeping this code around just in case we find out later we need to wait here for this
+            #while instance.status != 'ACTIVE':
+            #    print "%s Instance status: %s" % (time.strftime('%H:%M:%S'), instance.status)
+            #    time.sleep(10)
+            #    instance = nt.servers.get(instance.id)
 
-                # Try to mount dbvol-id
-                try:
-                    # 3rd argument is unfortunately bogus...
-                    nt.volumes.create_server_volume(
-                        instance.id, args.dbvol_id, '/dev/vdd')
-                except novaclient.exceptions.NotFound as e:
-                    sys.exit("dbvol-id \"%s\" not found. Set dbvol-id with: --dbvol-id id" % args.dbvol_id)
-                except novaclient.exceptions.BadRequest as e:
-                    sys.exit("dbvol-id BadRequest: %s" % e.message)
-
-                # Try to mount icatvol-id
-                try:
-                    # 3rd argument is unfortunately bogus...
-                    nt.volumes.create_server_volume(
-                        instance.id, args.icatvol_id, '/dev/vde')
-                except novaclient.exceptions.NotFound as e:
-                    sys.exit("icatvol-id \"%s\" not found. Set icatvol-id with: --icatvol-id id" % args.icatvol_id)
-                except novaclient.exceptions.BadRequest as e:
-                    sys.exit("icatvol-id BadRequest: %s" % e.message)
-
-                # Try to mount moinmoinvol-id
-                try:
-                    # 3rd argument is unfortunately bogus...
-                    nt.volumes.create_server_volume(
-                        instance.id, args.moinmoinvol_id, '/dev/vdf')
-                except novaclient.exceptions.NotFound as e:
-                    sys.exit("moinmoin-id \"%s\" not found. Set moinmoin-id with: --moinmoin-id id" % args.moinmoinvol_id)
-                except novaclient.exceptions.BadRequest as e:
-                    sys.exit("moinmoin-id BadRequest: %s" % e.message)
-
-                thismount = False
             if public:
                 if args.desired_ip is None:
                     freeips = [

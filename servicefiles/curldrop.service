@@ -1,8 +1,7 @@
 [Unit]
 Description=Serving curldrop
 After=docker.service
-Requires=docker.service mnt-data.mount
-BindsTo=mnt-data.mount
+Requires=docker.service
 
 [Service]
 TimeoutStartSec=0
@@ -15,7 +14,7 @@ ExecStart=/usr/bin/docker run \
     -e UPLOADDIR=/mnt/uploads/ \
     -e BASEURL=http://labs.nationaldataservice.org/upload/ \
     -e SERVERBUFF=17179869184 \
-    -v /mnt/data/temp:/mnt/uploads \
+    -v /mnt/uploads \
     ndslabs/curldrop
 ExecStop=/usr/bin/docker stop -t 5 curldrop
 

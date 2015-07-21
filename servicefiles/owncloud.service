@@ -14,8 +14,8 @@ ExecStart=/usr/bin/docker run \
     -p 80 \
     --link db2:db2 \
     --link irodsrest:irodsrest \
-    -v /mnt/data/owncloud/config:/var/www/owncloud/config \
-    -v /mnt/data/owncloud/data:/var/www/owncloud/data \
+    -v /var/www/owncloud/config \
+    -v /var/www/owncloud/data \
     --name owncloud1 \
     ndslabs/owncloud
 ExecStop=/usr/bin/docker stop -t 5 owncloud1

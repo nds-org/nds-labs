@@ -1,8 +1,7 @@
 [Unit]
 Description=Serving Moin Moin Wiki
 After=docker.service
-Requires=docker.service mnt-moinmoin.mount
-BindsTo=mnt-moinmoin.mount
+Requires=docker.service
 
 [Service]
 TimeoutStartSec=0
