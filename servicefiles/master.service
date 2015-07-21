@@ -1,0 +1,23 @@
+[Unit]
+Description=Master
+After=docker.service etcd.service
+Requires=docker.service etcd.service
+
+[Service]
+TimeoutStartSec=0
+EnvironmentFile=/etc/environment
+ExecStartPre=/bin/sh -c "/usr/bin/docker rm -f master > /dev/null ; true"
+ExecStartPre=/usr/bin/docker pull ndslabs/master
+ExecStart=/usr/bin/docker run \
+    --name master \
+    -p 80:22 \
+    --env-file=/etc/environment \
+    -v /var/run/fleet.sock:/var/run/fleet.sock \
+    -v /home/core/.ssh/authorized_keys:/root/.ssh/authorized_keys_on_host:ro \
+    -e NDSLABS_BRANCH=mfreemon-dev \
+     ndslabs/master
+ExecStop=/usr/bin/docker stop -t 5 master
+
+[X-Fleet]
+MachineMetadata=elastic_ip=true
+
