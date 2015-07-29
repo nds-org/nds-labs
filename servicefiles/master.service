@@ -14,7 +14,7 @@ ExecStart=/usr/bin/docker run \
     --env-file=/etc/environment \
     -v /var/run/fleet.sock:/var/run/fleet.sock \
     -v /home/core/.ssh/authorized_keys:/root/.ssh/authorized_keys_on_host:ro \
-    -e NDSLABS_BRANCH=mfreemon-dev \
+    -e NDSLABS_BRANCH=dev \
      ndslabs/master
 ExecStop=/usr/bin/docker stop -t 5 master
 
