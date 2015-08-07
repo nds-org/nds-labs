@@ -70,6 +70,7 @@ PROCEDURE
 11. Launch the master service.  This starts various services inside the
     NDS Labs Environment to bring it to a fully funcational state.
 
+    cd nds-labs/servicefiles
     fleetctl start master.service
     fleetctl status master.service
 

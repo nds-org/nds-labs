@@ -115,24 +115,30 @@ if __name__ == "__main__":
 
     # net ids can be looked up with the command:
     #   nova net-list
-    # the proper value for NCSA VLAD is:
+    # Values for NCSA VLAD:
     # net-id nds_net             165265ee-d257-43d7-b3b7-e579cd749ed4
+    # Values for NCSA nebula:
+    # net-id nds-demo-net        b7ee1f86-5d15-4340-84d4-6307f3b6184e
     parser.add_argument('--net-id', action='store', dest='net_id',
-                        default='165265ee-d257-43d7-b3b7-e579cd749ed4')
+                        default='b7ee1f86-5d15-4340-84d4-6307f3b6184e')
 
     # image ids can be looked up with the command:
     #   nova image-list
-    # a good default for NCSA VLAD is:
+    # Values for NCSA VLAD:
     # image-id coreos 681        a8839020-cb32-46c7-b0d4-882c5315dc22
+    # Values for NCSA nebula:
+    # image-id CoreOSmfreemon    dee68791-0356-4d8f-8392-4061c440be10
     parser.add_argument('--image-id', action='store', dest='image_id',
-                        default='a8839020-cb32-46c7-b0d4-882c5315dc22')
+                        default='dee68791-0356-4d8f-8392-4061c440be10')
 
     # flavor ids can be looked up with the command:
     #   nova flavor-list
-    # a good default for NCSA VLAD is:
+    # Values for NCSA VLAD:
     # flavor-id s1.medium        02a02a3c-d0b4-4bd1-9933-bb4391ad10b2    
+    # Values for NCSA nebula:
+    # flavor-id m1.small         2  (2G RAM, 20G HDD, 1 VCPU)
     parser.add_argument('--flavor-id', action='store', dest='flavor_id',
-                        default='02a02a3c-d0b4-4bd1-9933-bb4391ad10b2')
+                        default='2')
 
     args = parser.parse_args()
 
@@ -235,7 +241,11 @@ if __name__ == "__main__":
                 "coreos_%s" % args.cluster_name,
                 args.image_id,
                 args.flavor_id,
-                security_groups=["default", "coreos"],
+                # The security group "coreos" does not exist on nebula (nor is it needed)
+                # FIXME this needs to be handled better, so we don't have to edit this file for 
+                #       each cluster.  Same with the default ids above (net-id, image-id, etc.)
+                #security_groups=["default", "coreos"],
+                security_groups=["default"],
                 userdata=open('cloud-config_%s.yaml' % public, 'r'),
                 key_name=args.ssh_key_name,
                 nics=[{"net-id": args.net_id}]

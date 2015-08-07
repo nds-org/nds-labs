@@ -13,10 +13,12 @@
 source NDS-openrc.sh
 
 python startup_ndslabs.py \
- --ip 141.142.204.184 \
  --total-vms 3 \
  --total-public 1 \
  --name mfreemon \
  --ssh-key $PWD/ssh-key.pub \
  --env-file $PWD/docker-launcher/production.env 
+
+# specifying an IP address is optional, but if desired, the format is:
+# --ip 141.142.204.184 \
 
