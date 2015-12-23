@@ -1,0 +1,26 @@
+xwikiPGdata:
+  image: postgres
+  volumes:
+    - "/var/lib/postgresql/data"
+
+xwikiData:
+  image: lavadiablo/docker-xwiki:latest
+  volumes:
+    - "/var/local/xwiki"
+
+xwiki:
+  image: lavadiablo/docker-xwiki:latest
+  links:
+   - xwikidb
+  ports:
+   - "8082:8080"
+  volumes_from:
+   - xwikiData
+
+xwikidb:
+  image: postgres
+  volumes_from:
+   - xwikiPGdata
+  environment:
+   - POSTGRES_USER=xwiki
+   - POSTGRES_PASSWORD=xwiki

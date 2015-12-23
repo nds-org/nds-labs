@@ -1,0 +1,8 @@
+add group	Add a new group.
+add user	Add a new user.
+delete group	Delete a group.
+delete user	Delete a user.
+help	Show the help
+set passwd	Password change of user.
+show groups	Show the groups that are registered.
+show users	Show the users that are registered.
