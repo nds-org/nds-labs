@@ -1,0 +1,17 @@
+from jupyter/scipy-notebook
+env GLOBUS_CRED=NULL
+
+run apt-get -y update && \
+	rm -rf /var/lib/apt/lists/*
+
+run cd /usr/local && \
+	wget -nv --progress=bar:force -O- https://s3.amazonaws.com/connect.globusonline.org/linux/stable/globusconnectpersonal-latest.tgz \
+	| tar xzCf /usr/local - && \
+	cd /tmp && \
+	wget -nv --progress=bar:force https://github.com/globusonline/transfer-api-client-python/archive/master.zip && \
+
+	unzip -o master.zip && \
+	cd transfer-api-client-python-master && \
+	python2 setup.py install && \
+	rm -rf /tmp/* 
+

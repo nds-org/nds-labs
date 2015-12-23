@@ -1,0 +1,148 @@
+#
+# Makefile infrastructure for NDSLabs
+# Author: raila@illinois.edu
+##############################################################
+# WORK IN PROGRESS - beware
+##############################################################
+#
+#  Usage:   TODO
+#
+
+##############################################################
+# Configuration options
+##############################################################
+#
+# DEPDIR  - 	storage for timestamps and make dependency info, 
+# 		set code management tools to ignore.
+DEPDIR=.BUILDDEPS
+
+##############################################################
+# 
+##############################################################
+#
+# Using gnu make standard library: http://gmsl.sourceforge.net/
+#
+SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(SELF_DIR)/gmsl
+
+BUILDFILES	= $(IMAGES:%=Dockerfile.%)
+TIMESTAMPS	= $(IMAGES:%=$(DEPDIR)/%.timestamp)
+TAGNAMES	= $(NAME):$(VERSION)
+FULLNAME	= $(ORG)/$(NAME):$(VERSION)
+ORG		?= NDS
+
+all: 		$(TIMESTAMPS)
+.PHONY:		all
+
+$(DEPDIR):
+	mkdir -p $(DEPDIR)
+$(TIMESTAMPS):  |$(DEPDIR)
+$(TIMESTAMPS):  Makefile
+
+################################################
+#
+# Supportive commands
+#
+################################################
+shell:
+	docker run --rm it ---
+
+################################################
+#
+# Docker stuff - dependencies etc.
+#
+################################################
+#
+# Docker images can be changed outside of makes control,
+# so pull the images timestamps from docker in a sub-make
+# The sub-make touches the (empty) included makefile which
+# causes make to re-start and re-read the refreshed timestamps 
+#
+-include $(DEPDIR)/D.makefile.docker
+ifndef DOCKER_TIMESTAMPS
+
+$(DEPDIR)/D.makefile.docker:
+	-echo "Pulling docker image timestamps"
+	$(MAKE) DOCKER_TIMESTAMPS=true docker-timestamps $(TIMESTAMPS)
+
+$(DEPDIR)/%.timestamp : Dockerfile.% $(DEPS.%)
+	docker build $(BUILDARGS.$*:%=--build-arg %) -t $* -f $< .
+	touch $(DEPDIR)/$*.timestamp
+
+
+#tags:
+#	docker tag -f $(IMG):$(VERSION) $(IMG):latest
+else
+.PHONY: docker-make-include
+docker-timestamps: $(TIMESTAMPS) docker-make-include
+docker-make-include: | $(DEPDIR)
+	touch $(DEPDIR)/D.makefile.docker
+
+#
+# update timestamp if image exists:  set timestamp date from docker image,
+# if it doesn't exist set it to 10 years ago
+#
+$(DEPDIR)/%.timestamp :
+	-docker inspect --format='{{ .Created }}' $* > $(DEPDIR)/$*.timestamp
+	if [ -s $(DEPDIR)/$*.timestamp ]; \
+		 then touch -d `cat $@` $@ ;\
+	 else \
+		touch -d "today-10years" $@; fi
+endif
+
+###############################################
+#
+# Dependencies
+#
+################################################
+define TEMPLATE_DEP =
+#TODO:   Not exactly proper for multi-image makes, rebuilds more than necessary
+ FILES.$(1) := $(shell find Files.$(1) -type f -print)
+
+ $(DEPDIR)/$(1).timestamp: $$(DEPS.$(1)) $$(FILES.$(1))
+
+ #DEPS.$(1) := CMDS.$(1) EXTDEPS.$(1)
+endef
+
+$(foreach p,$(IMAGES),$(eval $(call TEMPLATE_DEP,$(p))))
+
+################################################
+#
+# Cleanup 
+#
+################################################
+clean: cleandir 
+realclean: clean cleandocker
+cleandir:
+	-rm -rf $(DEPDIR)
+cleandocker:
+	-docker rmi $(IMAGES)
+
+#
+# Omit old fashioed sccs/rcs, etc searching.   Improves performance and noise on debug
+#
+.SUFFIXES:            # Delete the default suffixes
+%:: RCS/%,v
+%:: RCS/%
+%:: s.%
+%:: SCCS/s.%
+%:: %,v
+
+
+#
+# multiline outputs to build commands
+# Note 2 lines in _newline def
+# use as:
+# define CMDS
+# 	echo this
+# 	echo that
+# 	...
+# endef
+# foo:
+# 	$(call multiline $(CMDS))
+#
+define _newline
+
+
+endef
+multiline	= '$(subst $(_newline),\n,$1)'
