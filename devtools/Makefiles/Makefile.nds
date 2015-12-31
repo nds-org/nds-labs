@@ -14,7 +14,7 @@
 #
 # DEPDIR  - 	storage for timestamps and make dependency info, 
 # 		set code management tools to ignore.
-DEPDIR=#build
+DEPDIR	:= \\\#build
 
 ##############################################################
 # 
