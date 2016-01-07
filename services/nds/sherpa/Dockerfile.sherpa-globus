@@ -1,0 +1,13 @@
+FROM odise/busybox-python
+
+run wget -O- http://s3.amazonaws.com/connect.globusonline.org/linux/stable/globusconnectpersonal-latest.tgz \
+    | gzip |  tar -xf - && \
+    cd /tmp && \
+    wget https://github.com/globusonline/transfer-api-client-python/archive/master.zip && \
+
+    unzip -o master.zip && \
+    cd transfer-api-client-python-master && \
+    python2 setup.py install && \
+    rm -rf /tmp/*
+
+

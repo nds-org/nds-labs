@@ -1,0 +1,3 @@
+FROM busybox
+
+copy cmd-sherpaweb /usr/local/bin
