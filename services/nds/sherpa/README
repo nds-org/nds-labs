@@ -1,2 +1,10 @@
 Prototype data sherpa master and sherpa data haulers.
 TODO REST/TLS in golang with healthz - in progress.
+
+
+Dockerfile.sherpactl        - sherpa controller with API - what users/orchestators talk to
+Dockerfile.sherpa-dev       - Development image - produces the sherpa binaries
+Dockerfile.sherpa-globus    - Globus transfers
+Dockerfile.sherpa-pull-web  - web pulls via URL
+
+sherpactl.go                - src for sherpactl

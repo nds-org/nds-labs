@@ -14,7 +14,7 @@
 #
 # DEPDIR  - 	storage for timestamps and make dependency info, 
 # 		set code management tools to ignore.
-DEPDIR	:= \\\#build
+DEPDIR	:= .build-tmp
 
 ##############################################################
 # 
@@ -35,7 +35,7 @@ all: 		$(TIMESTAMPS)
 .PHONY:		all
 
 $(DEPDIR):
-	mkdir -p $(DEPDIR)
+	-mkdir -p $(DEPDIR)
 $(TIMESTAMPS):  |$(DEPDIR)
 $(TIMESTAMPS):  Makefile
 
@@ -62,8 +62,7 @@ shell:
 ifndef DOCKER_TIMESTAMPS
 
 $(DEPDIR)/D.makefile.docker:
-	-echo "Pulling docker image timestamps"
-	$(MAKE) DOCKER_TIMESTAMPS=true docker-timestamps $(TIMESTAMPS)
+	@-$(MAKE) -s DOCKER_TIMESTAMPS=true docker-timestamps $(TIMESTAMPS)
 
 $(DEPDIR)/%.timestamp : Dockerfile.% $(DEPS.%)
 	docker build $(BUILDARGS.$*:%=--build-arg %) -t $* -f $< .
@@ -76,15 +75,15 @@ else
 .PHONY: docker-make-include
 docker-timestamps: $(TIMESTAMPS) docker-make-include
 docker-make-include: | $(DEPDIR)
-	touch $(DEPDIR)/D.makefile.docker
+	@touch $(DEPDIR)/D.makefile.docker
 
 #
 # update timestamp if image exists:  set timestamp date from docker image,
 # if it doesn't exist set it to 10 years ago
 #
 $(DEPDIR)/%.timestamp :
-	-docker inspect --format='{{ .Created }}' $* > $(DEPDIR)/$*.timestamp
-	if [ -s $(DEPDIR)/$*.timestamp ]; \
+	@-docker inspect --format='{{ .Created }}' $* > $(DEPDIR)/$*.timestamp
+	@if [ -s $(DEPDIR)/$*.timestamp ]; \
 		 then touch -d `cat $@` $@ ;\
 	 else \
 		touch -d "today-10years" $@; fi
@@ -96,12 +95,9 @@ endif
 #
 ################################################
 define TEMPLATE_DEP =
-#TODO:   Not exactly proper for multi-image makes, rebuilds more than necessary
- FILES.$(1) := $(shell find Files.$(1) -type f -print)
 
- $(DEPDIR)/$(1).timestamp: $$(DEPS.$(1)) $$(FILES.$(1))
+ $(DEPDIR)/$(1).timestamp: $$(DEPS.$(1)) $$(FILES.$(1)) $$(PREREQS.$(1))
 
- #DEPS.$(1) := CMDS.$(1) EXTDEPS.$(1)
 endef
 
 $(foreach p,$(IMAGES),$(eval $(call TEMPLATE_DEP,$(p))))
