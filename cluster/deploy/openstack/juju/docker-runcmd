@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cat << EOF
+    docker create --name deploy -it juju-deploy
+    docker cp <your openstack-rc.sh> deploy:/etc/openstack-rc.sh
+    docker start -ai deploy ndsdeploy
+EOF
