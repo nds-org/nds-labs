@@ -1,0 +1,5 @@
+FROM golang
+
+COPY sherpactl.go /go/src/sherpactl/sherpactl.go
+
+CMD go get sherpactl && go build sherpactl && cp /go/bin/sherpactl /build

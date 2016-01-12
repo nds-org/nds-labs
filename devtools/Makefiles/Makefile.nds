@@ -12,9 +12,8 @@
 # Configuration options
 ##############################################################
 #
-# DEPDIR  - 	storage for timestamps and make dependency info, 
-# 		set code management tools to ignore.
-DEPDIR	:= .build-tmp
+# BUILDDIR  - 	storage for all build things and dependency mgmt
+BUILDDIR	:= nds-build
 
 ##############################################################
 # 
@@ -26,78 +25,54 @@ SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 include $(SELF_DIR)/gmsl
 
 BUILDFILES	= $(IMAGES:%=Dockerfile.%)
-TIMESTAMPS	= $(IMAGES:%=$(DEPDIR)/%.timestamp)
+TIMESTAMPS	= $(IMAGES:%=$(BUILDDIR)/%.d)
 TAGNAMES	= $(NAME):$(VERSION)
 FULLNAME	= $(ORG)/$(NAME):$(VERSION)
-ORG		?= NDS
+ORG			?= NDS
 
 all: 		$(TIMESTAMPS)
-.PHONY:		all
+.PHONY:		all clean realclean ALWAYS
 
-$(DEPDIR):
-	-mkdir -p $(DEPDIR)
-$(TIMESTAMPS):  |$(DEPDIR)
-$(TIMESTAMPS):  Makefile
-
-################################################
-#
-# Supportive commands
-#
-################################################
-shell:
-	docker run --rm it ---
+$(BUILDDIR):
+	@-mkdir -p $(BUILDDIR)
+$(TIMESTAMPS):  |$(BUILDDIR)
+$(TIMESTAMPS): $(MAKEFILE_LIST)
 
 ################################################
 #
-# Docker stuff - dependencies etc.
+# Docker dependencies 
+# 
+# Pull timestamps from docker to filesystem for make
+# Relies on make restart after included file changes
+# in a sub-make
+# Set the timestamp from the docker image build time,
+# or to now-10years to force rebuild
 #
-################################################
-#
-# Docker images can be changed outside of makes control,
-# so pull the images timestamps from docker in a sub-make
-# The sub-make touches the (empty) included makefile which
-# causes make to re-start and re-read the refreshed timestamps 
-#
--include $(DEPDIR)/D.makefile.docker
-ifndef DOCKER_TIMESTAMPS
-
-$(DEPDIR)/D.makefile.docker:
-	@-$(MAKE) -s DOCKER_TIMESTAMPS=true docker-timestamps $(TIMESTAMPS)
-
-$(DEPDIR)/%.timestamp : Dockerfile.% $(DEPS.%)
-	docker build $(BUILDARGS.$*:%=--build-arg %) -t $* -f $< .
-	touch $(DEPDIR)/$*.timestamp
-
-
-#tags:
-#	docker tag -f $(IMG):$(VERSION) $(IMG):latest
+-include $(BUILDDIR)/timestamps.d
+ifdef DOCKER_TIMESTAMPS
+$(BUILDDIR)/timestamps.d: $(BUILDDIR)
+	@touch $(BUILDDIR)/timestamps.d
+$(BUILDDIR)/%.d : ALWAYS $(BUILDDIR)
+	@rm -f $@ && touch -d `docker inspect --format='{{ .Created }}' $* 2>/dev/null || echo "now-10years"` $@
 else
-.PHONY: docker-make-include
-docker-timestamps: $(TIMESTAMPS) docker-make-include
-docker-make-include: | $(DEPDIR)
-	@touch $(DEPDIR)/D.makefile.docker
-
-#
-# update timestamp if image exists:  set timestamp date from docker image,
-# if it doesn't exist set it to 10 years ago
-#
-$(DEPDIR)/%.timestamp :
-	@-docker inspect --format='{{ .Created }}' $* > $(DEPDIR)/$*.timestamp
-	@if [ -s $(DEPDIR)/$*.timestamp ]; \
-		 then touch -d `cat $@` $@ ;\
-	 else \
-		touch -d "today-10years" $@; fi
+.PHONY: $(BUILDDIR)/timestamps.d
+$(BUILDDIR)/timestamps.d: $(BUILDDIR)
+	@$(MAKE) -s DOCKER_TIMESTAMPS=true $(BUILDDIR)/timestamps.d $(TIMESTAMPS)
 endif
+
+$(BUILDDIR)/%.d : Dockerfile.% $(DEPS.%)
+	docker build --pull $(BUILDARGS.$*:%=--build-arg %) -t $* -f $< .
+	touch $@
+
 
 ###############################################
 #
-# Dependencies
+# Rule and dependency template for IMAGES
 #
 ################################################
 define TEMPLATE_DEP =
-
- $(DEPDIR)/$(1).timestamp: $$(DEPS.$(1)) $$(FILES.$(1)) $$(PREREQS.$(1))
-
+ FILES.$(1) = $(wildcard Files.$(1)/*)
+ $(BUILDDIR)/$(1).d: $$(DEPS.$(1)) $$(FILES.$(1)) $$(PREREQS.$(1)) Dockerfile.$(1)
 endef
 
 $(foreach p,$(IMAGES),$(eval $(call TEMPLATE_DEP,$(p))))
@@ -110,14 +85,14 @@ $(foreach p,$(IMAGES),$(eval $(call TEMPLATE_DEP,$(p))))
 clean: cleandir 
 realclean: clean cleandocker
 cleandir:
-	-rm -rf $(DEPDIR)
+	-rm -rf $(BUILDDIR)
 cleandocker:
-	-docker rmi $(IMAGES)
+	-docker rmi $(IMAGES) || true
 
 #
 # Omit old fashioed sccs/rcs, etc searching.   Improves performance and noise on debug
 #
-.SUFFIXES:            # Delete the default suffixes
+.SUFFIXES:            # Delete unused old default suffixes
 %:: RCS/%,v
 %:: RCS/%
 %:: s.%

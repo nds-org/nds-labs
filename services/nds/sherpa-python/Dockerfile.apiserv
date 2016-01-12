@@ -1,0 +1,3 @@
+FROM python:2
+RUN apt-get -y update  && apt-get clean all && pip install Tornado-JSON 
+COPY Files.apiserv /nds/bin/

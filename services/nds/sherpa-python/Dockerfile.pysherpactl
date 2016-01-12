@@ -1,0 +1,8 @@
+FROM alpine
+RUN apk add --no-cache bash docker
+
+COPY pysherpactl /usr/bin
+COPY pysherpactl-usage /usr/bin
+CMD pysherpactl-usage
+
+
