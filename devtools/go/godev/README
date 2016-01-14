@@ -1,0 +1,2 @@
+godev is a dev image for golang, adding editing and debugging
+via delve: github.com/derekparker/delve/cmd/dlv 

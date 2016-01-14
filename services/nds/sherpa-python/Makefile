@@ -11,5 +11,6 @@ GIT.apiserv := https://github.com/hfaran/Tornado-JSON.git
 
 include $(NDSLABS_SRC)/devtools/Makefiles/Makefile.nds
 
+
 testapi:
-	docker run --rm -it apiserv bash -p 8080:8080
+	docker run --rm -it -p 8080:8080 apiserv sh 

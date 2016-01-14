@@ -1,3 +1,6 @@
-FROM python:2
-RUN apt-get -y update  && apt-get clean all && pip install Tornado-JSON 
+FROM alpine
+RUN apk --no-cache add python py-pip
+RUN pip install tornado tornado-json
+#apt-get -y update  && apt-get clean all && pip install Tornado-JSON 
 COPY Files.apiserv /nds/bin/
+#COPY Files.apiserv /nds/bin/

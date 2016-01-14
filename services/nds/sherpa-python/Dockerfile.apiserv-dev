@@ -1,0 +1,5 @@
+FROM alpine
+RUN apk --no-cache add python git
+RUN git clone https://github.com/tornadoweb/tornado.git
+RUN cd tornado && python setup.py install
+#COPY Files.apiserv /nds/bin/

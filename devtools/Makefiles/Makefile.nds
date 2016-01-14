@@ -62,7 +62,7 @@ endif
 
 $(BUILDDIR)/%.d : Dockerfile.% $(DEPS.%)
 	docker build --pull $(BUILDARGS.$*:%=--build-arg %) -t $* -f $< .
-	touch $@
+	@touch $@
 
 
 ###############################################
@@ -71,7 +71,8 @@ $(BUILDDIR)/%.d : Dockerfile.% $(DEPS.%)
 #
 ################################################
 define TEMPLATE_DEP =
- FILES.$(1) = $(wildcard Files.$(1)/*)
+ FILES.$(1) = $(shell [ -d Files.$(1) ] && find Files.$(1) -type f -print)
+ IMAGE.$(1) = $(BUILDDIR)/$(1).d 
  $(BUILDDIR)/$(1).d: $$(DEPS.$(1)) $$(FILES.$(1)) $$(PREREQS.$(1)) Dockerfile.$(1)
 endef
 

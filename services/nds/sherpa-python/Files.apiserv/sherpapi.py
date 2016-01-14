@@ -23,3 +23,7 @@ def main():
     # Start the application on port 8888
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
+
+if __name__ == "__main__":
+    main()
+
