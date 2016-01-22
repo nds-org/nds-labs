@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Any errors will cause this script to fail immediately
-set -e
+# set -e
 
 # Run the base single-node setup as described here: https://github.com/kubernetes/kubernetes/blob/release-1.1/docs/getting-started-guides/docker.md/
 docker run --net=host -d gcr.io/google_containers/etcd:2.0.12 /usr/local/bin/etcd --addr=127.0.0.1:4001 --bind-addr=0.0.0.0:4001 --data-dir=/var/etcd/data
@@ -35,12 +35,27 @@ cd /nds && \
     git clone https://opensource.ncsa.illinois.edu/bitbucket/scm/bd/dockerfiles.git 
 
 # Build required docker images
-cd /nds/dockerfiles/clowder && \
-    docker build -t clowder/python-base:latest python && \
-    docker build -t clowder/video-preview:latest video-preview && \
-    docker build -t clowder/image-preview:latest image-preview && \
-    docker build -t clowder/plantcv:latest plantcv && \
-    docker build -t clowder/clowder:latest clowder
+cd /nds/dockerfiles/clowder
+
+echo "Building python-base..."
+sleep 2
+docker build -t clowder/python-base:latest python-base
+
+echo "Building video-preview..."
+sleep 2
+docker build -t clowder/video-preview:latest video-preview
+
+echo "Building image-preview..."
+sleep 2
+docker build -t clowder/image-preview:latest image-preview
+
+echo "Building plantcv..."
+sleep 2
+docker build -t clowder/plantcv:latest plantcv
+
+echo "Building clowder..."
+sleep 2
+docker build -t clowder/clowder:latest clowder
 
 # Return to previous pwd
 cd $PREV_PATH
