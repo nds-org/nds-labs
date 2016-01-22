@@ -1,7 +1,7 @@
-IMAGES	= clowderctl-dev clowderctl # clowder-webpull # clowder-git clowder-globus
+IMAGES	= clowderctl-dev clowderctl
 ORG 	= NDS
 VERSION = 1.0
-include $(abspath ../../..)/devtools/Makefiles/Makefile.nds
+include $(NDSLABS_SRC)/devtools/Makefiles/Makefile.nds
 
 
 IMAGE.clowderctl: $(BUILDDIR)/clowderctl

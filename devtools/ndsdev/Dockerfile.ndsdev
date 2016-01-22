@@ -1,6 +1,14 @@
-FROM ubuntu:trusty
+FROM ubuntu:wily
 RUN apt-get -y update \
-    && apt-get -y install git vim docker.io wget curl unzip \
+    && apt-get -y install --no-install-recommends \
+        build-essential \
+        git \
+        vim \
+        docker.io \
+        wget \
+        curl \
+        unzip \
+        ca-certificates \
     && apt-get -y clean all \
     && rm -rf /var/lib/apt/lists/*
 #    && wget -O `which docker` https://get.docker.com/builds/Linux/x86_64/docker-latest \
