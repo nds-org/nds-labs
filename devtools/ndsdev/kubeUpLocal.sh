@@ -3,8 +3,13 @@
 # Any errors will cause this script to fail immediately
 # set -e
 
+# Pull IP/hostname from first argument
+DEFAULT_IP_ADDR=127.0.0.1
+ip_addr=${1:-$DEFAULT_IP_ADDR}
+echo "Starting Kubernetes cluster at ${ip_addr}"
+
 # Run the base single-node setup as described here: https://github.com/kubernetes/kubernetes/blob/release-1.1/docs/getting-started-guides/docker.md/
-docker run --net=host -d gcr.io/google_containers/etcd:2.0.12 /usr/local/bin/etcd --addr=127.0.0.1:4001 --bind-addr=0.0.0.0:4001 --data-dir=/var/etcd/data
+docker run --net=host -d gcr.io/google_containers/etcd:2.0.12 /usr/local/bin/etcd --addr=${ip_addr}:4001 --bind-addr=0.0.0.0:4001 --data-dir=/var/etcd/data
 docker run \
     --volume=/:/rootfs:ro \
     --volume=/sys:/sys:ro \
@@ -17,8 +22,8 @@ docker run \
     --privileged=true \
     -d \
     gcr.io/google_containers/hyperkube:v1.1.3 \
-    /hyperkube kubelet --containerized --hostname-override="127.0.0.1" --address="0.0.0.0" --api-servers=http://localhost:8080 --config=/etc/kubernetes/manifests
-docker run -d --net=host --privileged gcr.io/google_containers/hyperkube:v1.1.3 /hyperkube proxy --master=http://127.0.0.1:8080 --v=2
+    /hyperkube kubelet --containerized --hostname-override="${ip_addr}" --address="0.0.0.0" --api-servers=http://${ip_addr}:8080 --config=/etc/kubernetes/manifests
+docker run -d --net=host --privileged gcr.io/google_containers/hyperkube:v1.1.3 /hyperkube proxy --master=http://${ip_addr}:8080 --v=2
 
 # Save the workdir so we can return to it after execution
 PREV_PATH=`pwd`
@@ -31,8 +36,9 @@ export PATH=$PATH:`pwd`
 chmod +x ~/kubectl/kubectl
 
 # Clone the repo containing the files required to build clowder
-cd /nds && \ 
-    git clone https://opensource.ncsa.illinois.edu/bitbucket/scm/bd/dockerfiles.git 
+mkdir -p /nds
+cd /nds
+git clone https://opensource.ncsa.illinois.edu/bitbucket/scm/bd/dockerfiles.git 
 
 # Build required docker images
 cd /nds/dockerfiles/clowder
