@@ -9,20 +9,21 @@ MAINTAINER Marcello_deSales@intuit.com
 
 ENV     DEBIAN_FRONTEND noninteractive
 
-RUN     apt-get update && apt-get install -y git npm nodejs && rm -rf /var/lib/apt/lists/*
-RUN     ln -s /usr/bin/nodejs /usr/local/bin/node
+RUN     apt-get update \
+        && apt-get install -y git npm nodejs \
+        && rm -rf /var/lib/apt/lists/* \
+        && npm install && npm install -g bower grunt-cli \
+        RUN     ln -s /usr/bin/nodejs /usr/local/bin/node
 
 WORKDIR /runtime
-ADD     package.json    /runtime/package.json
-RUN     npm install
-RUN     npm install -g bower grunt-cli
+COPY     package.json    /runtime/package.json
+#RUN     npm install
+#RUN     npm install -g bower grunt-cli
 
 
-ADD     bower.json      /runtime/bower.json
-ADD     .bowerrc        /runtime/.bowerrc
+COPY     bower.json      /runtime/bower.json
+COPY     .bowerrc        /runtime/.bowerrc
 RUN     bower --allow-root --force-latest install
-
-ADD     .   /runtime
 RUN 	grunt build
 
 # The default port of the application

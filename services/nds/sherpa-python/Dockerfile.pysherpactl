@@ -1,8 +1,10 @@
-FROM alpine
-RUN apk add --no-cache bash docker
+FROM ubuntu
+RUN apt-get -y update && apt-get -y install wget docker.io python python-dev python-pip && pip install flask-restful
+#RUN apt-get -y update && apt-get install python-pip && pip install flask-restful
+#&& pip install -y flask-restful
 
-COPY pysherpactl /usr/bin
-COPY pysherpactl-usage /usr/bin
-CMD pysherpactl-usage
+COPY FILES.pysherpactl /
+#COPY pysherpactl-usage /usr/bin
+#CMD pysherpactl-usage
 
 
