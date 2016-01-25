@@ -30,7 +30,7 @@ class IpyClowder(restful.Resource):
 
     def post(self):
         args = parser.parse_args()
-	cmd = '/usr/bin/docker create -v /nds/data pysherpactl wget --user=' + str(args['user']) + ":"+str(args['pw'])+ " "+ str(args['dataset'])+ " -P /nds/data"
+	cmd = '/usr/bin/docker create -v /home/jovyan/work pysherpactl wget --user=' + str(args['user']) + ":"+str(args['pw'])+ " "+ str(args['dataset'])+ " -P /home/jovyan/work"
 	print cmd
 	dataContainer = os.popen(cmd).read().rstrip()
 	print "DC: ", dataContainer
