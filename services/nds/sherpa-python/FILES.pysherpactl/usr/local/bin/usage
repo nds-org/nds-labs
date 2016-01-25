@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 usage-docker() {
     echo -n 'docker run -d --rm -it -v /var/run/docker.sock:/var/run/docker.sock pysherpactl pysherpactl'
