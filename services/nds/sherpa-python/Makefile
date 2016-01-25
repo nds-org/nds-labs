@@ -18,3 +18,6 @@ testapi:
 testcli:
 	curl -H "Content-Type: application/json" -X POST -d '{"host":"http://localhost","dataset":"http://localhost/something","user":"raila@illinois.edu","pw":"passcred"}' localhost:8080/tools/docker/ipython
 	#curl http://localhost:8080/tools/docker/ipython -d "dataset=http://localhost/something" -d "user=raila@illinois.edu" -d "pw=passtext" -X POST -v
+
+testlog:
+	curl -H "Content-Type: application/json" -X GET localhost:8080/logs

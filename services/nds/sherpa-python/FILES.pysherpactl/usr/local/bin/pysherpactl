@@ -8,12 +8,21 @@ import os
 
 app = Flask(__name__)
 api = restful.Api(app)
+api.add_resource(IpyClowder, '/tools/docker/ipython')
+api.add_resource(DockerLog, '/logs')
 
 parser = reqparse.RequestParser()
 parser.add_argument('dataset')
 parser.add_argument('user')
 parser.add_argument('pw')
 parser.add_argument('host')
+
+class DockerLog(restful.Resource):
+    def get(self):
+        cmd = '/usr/bin/docker logs pysherpactl"
+        print cmd
+        logtext = os.popen(cmd).read().rstrip()
+        return logtest, 201
 
 class IpyClowder(restful.Resource):
     def get(self):
@@ -40,7 +49,6 @@ class IpyClowder(restful.Resource):
 	print ret
 	return ret, 201
 
-api.add_resource(IpyClowder, '/tools/docker/ipython')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=int("8080"), debug=True)
