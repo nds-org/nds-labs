@@ -1,10 +1,11 @@
 IMAGES	= sherpactl-dev sherpactl # sherpa-webpull # sherpa-git sherpa-globus
 ORG 	= NDS
 VERSION = 1.0
-include $(NDSLABS_SRC)/devtools/Makefiles/Makefile.nds
-
 
 $(IMAGE.sherpactl): $(BUILDDIR)/sherpactl sherpactl.go
+include ../../../devtools/Makefiles/Makefile.nds
+
+
 #
 # Build the sherpa binary in $(DEPS)
 # dev image builds the binary and installs in /build

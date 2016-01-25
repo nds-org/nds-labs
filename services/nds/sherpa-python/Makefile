@@ -9,7 +9,7 @@ VERSION = 1.0
 FILES.pysherpactl := pysherpactl-usage pysherpactl
 GIT.apiserv := https://github.com/hfaran/Tornado-JSON.git
 
-include $(NDSLABS_SRC)/devtools/Makefiles/Makefile.nds
+include ../../../devtools/Makefiles/Makefile.nds
 
 
 testapi:
