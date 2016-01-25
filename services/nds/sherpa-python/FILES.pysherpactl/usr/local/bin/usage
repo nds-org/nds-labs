@@ -1,7 +1,7 @@
 #!/bin/bash
 
 usage-docker() {
-    echo -n 'docker run -d -p 8080:8080 -t -v /var/run/docker.sock:/var/run/docker.sock pysherpactl pysherpactl'
+    echo -n 'docker run -d -p 8080:8080 --name pysherpactl -v /var/run/docker.sock:/var/run/docker.sock pysherpactl pysherpactl'
 }
 
 usage() {
