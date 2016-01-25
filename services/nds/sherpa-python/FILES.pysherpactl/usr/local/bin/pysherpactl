@@ -19,7 +19,7 @@ parser.add_argument('host')
 
 class DockerLog(restful.Resource):
     def get(self):
-        cmd = '/usr/bin/docker logs pysherpactl"
+        cmd = '/usr/bin/docker logs pysherpactl'
         print cmd
         logtext = os.popen(cmd).read().rstrip()
         return logtest, 201
