@@ -1,4 +1,4 @@
-IMAGES	= pysherpactl scratch sherpa apiserv
+IMAGES	= pysherpactl #scratch sherpa apiserv
 ORG 	= NDS
 VERSION = 1.0
 
