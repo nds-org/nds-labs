@@ -42,7 +42,7 @@ class IpyClowder(restful.Resource):
 	port = os.popen(portcmd).read().rstrip()
 	print 'on port ' + port
 	ret = {}
-	ret['id'] = "/tools/docker/"+str(id)
+	ret['id'] = toolContainer
 	ret['URL'] = args['host']+":"+port 
 	print ret
 	return ret, 201
