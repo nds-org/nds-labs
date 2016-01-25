@@ -8,8 +8,6 @@ import os
 
 app = Flask(__name__)
 api = restful.Api(app)
-api.add_resource(IpyClowder, '/tools/docker/ipython')
-api.add_resource(DockerLog, '/logs')
 
 parser = reqparse.RequestParser()
 parser.add_argument('dataset')
@@ -49,6 +47,8 @@ class IpyClowder(restful.Resource):
 	print ret
 	return ret, 201
 
+api.add_resource(IpyClowder, '/tools/docker/ipython')
+api.add_resource(DockerLog, '/logs')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=int("8080"), debug=True)
