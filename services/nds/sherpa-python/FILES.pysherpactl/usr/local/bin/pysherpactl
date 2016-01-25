@@ -20,7 +20,7 @@ class DockerLog(restful.Resource):
         cmd = '/usr/bin/docker logs pysherpactl'
         print cmd
         logtext = os.popen(cmd).read().rstrip()
-        return logtest, 201
+        return logtext, 201
 
 class IpyClowder(restful.Resource):
     def get(self):
