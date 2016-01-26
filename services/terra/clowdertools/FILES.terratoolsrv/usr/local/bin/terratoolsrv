@@ -49,7 +49,7 @@ class IpyClowder(restful.Resource):
         #
         # Do data xfer container in another container
         #
-        cmd = '/usr/bin/docker run --rm --volumes-from '+toolContainer+' ndslabs/terratoolsrv /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['user'])+' '+str(args['pw'])+' '+'/home/jovyan/work/data/data.zip'
+        cmd = '/usr/bin/docker run --rm -i --volumes-from '+toolContainer+' terratoolsrv /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['user'])+' '+str(args['pw'])
         print cmd
         dataContainer = os.popen(cmd).read().rstrip()
         print "DC: ", dataContainer

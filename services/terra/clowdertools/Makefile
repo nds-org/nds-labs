@@ -1,10 +1,5 @@
 IMAGES	=  terratoolsrv
 VERSION = 1.0
-
-#
-# 
-FILES.terratoolsrv := terratoolsrv-usage terratoolsrv
-
 include ../../../devtools/Makefiles/Makefile.nds
 
 
