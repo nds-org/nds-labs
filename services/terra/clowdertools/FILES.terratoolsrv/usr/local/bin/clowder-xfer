@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo $*
+
+curl --connect-timeout 10 $2 -o /home/jovyan/work/data/dataset.zip $1 > /home/jovyan/work/data/xfer-out 2>&1
