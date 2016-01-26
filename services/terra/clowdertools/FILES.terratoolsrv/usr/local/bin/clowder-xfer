@@ -2,4 +2,6 @@
 
 echo $*
 
-curl --connect-timeout 10 $2 -o /home/jovyan/work/data/dataset.zip $1 > /home/jovyan/work/data/xfer-out 2>&1
+echo "curl --connect-timeout 10 --user "${2}:${3}" -o ${4} ${1}"
+curl --connect-timeout 10 --user "${2}:${3}" -o ${4}  ${1} > ${4}.out
+chown -R 1000:100 /home/jovyan
