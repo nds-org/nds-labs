@@ -8,6 +8,8 @@ import (
     "os"
     "os/signal"
     "syscall"
+    "fmt"
+    "encoding/json"
 )
 
 // Log callback for dockerclient
@@ -48,9 +50,23 @@ func main() {
     // API Routes
     //
     router, err := rest.MakeRouter(
-        rest.Get("/docker", func(w rest.ResponseWriter, req *rest.Request) {
+        rest.Post("/tools/docker/version", func(w rest.ResponseWriter, req *rest.Request) {
             //w.WriteJson(map[string]string{"Body": "Hello World!"})
-            w.WriteJson(map[string]string{"Body": "Hello World!"})
+            version, _ := docker.Version()
+            fmt.Print(version)
+            b, _ := json.Marshal(version)
+            fmt.Print(b)
+            //w.WriteJson(map[string]string{"Body": "Hello World!"})
+            w.WriteJson(version)
+        }),
+        rest.Get("/docker/version", func(w rest.ResponseWriter, req *rest.Request) {
+            //w.WriteJson(map[string]string{"Body": "Hello World!"})
+            version, _ := docker.Version()
+            fmt.Print(version)
+            b, _ := json.Marshal(version)
+            fmt.Print(b)
+            //w.WriteJson(map[string]string{"Body": "Hello World!"})
+            w.WriteJson(version)
         }),
     )
     if err != nil {
@@ -65,3 +81,4 @@ func main() {
     http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("."))))
     log.Fatal(http.ListenAndServe(":8080", api.MakeHandler()))
 }
+

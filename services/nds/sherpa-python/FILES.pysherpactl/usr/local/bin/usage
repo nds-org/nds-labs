@@ -1,0 +1,20 @@
+#!/bin/bash
+
+usage-docker() {
+    echo -n 'docker run -d -p 8080:8080 --name pysherpactl -v /var/run/docker.sock:/var/run/docker.sock pysherpactl pysherpactl'
+}
+
+usage() {
+    echo "This image produces the command to run itself in the following environments:"
+    echo -n 'eval $(docker run --rm -t pysherpactl usage docker)'
+
+}
+
+case $1 in
+    "docker" )
+        usage-docker
+        ;;
+    *)
+        usage
+        ;;
+esac

@@ -4,7 +4,7 @@
 IMAGES	:=	swagger-editor
 GITSRC.swagger-editor := https://raw.githubusercontent.com/swagger-api/swagger-editor/master/Dockerfile
 
-include $(NDSLABS_SRC)/devtools/Makefiles/Makefile.nds
+include ../../Makefiles/Makefile.nds
 
 ts:
 	echo $(TIMESTAMPS)

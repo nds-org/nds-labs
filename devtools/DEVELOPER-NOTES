@@ -1,0 +1,6 @@
+
+    Notes, tips, and tricks to help the build and developer processes
+
+Pulling source for build, shallow copy (no history):
+    1. set BRANCH if desired (master if unset) and GITREF
+    2. git clone --depth=1 ${GITREF} --branch ${BRANCH:-master} --single-branch <path>

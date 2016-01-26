@@ -61,6 +61,7 @@ $(BUILDDIR)/timestamps.d: $(BUILDDIR)
 endif
 
 $(BUILDDIR)/%.d : Dockerfile.% $(DEPS.%)
+	@-docker rmi -f --no-prune $*   # rmi required as docker build does not update the Created metadata on new build - Docker bug
 	docker build --pull $(BUILDARGS.$*:%=--build-arg %) -t $* -f $< .
 	@touch $@
 
@@ -71,8 +72,8 @@ $(BUILDDIR)/%.d : Dockerfile.% $(DEPS.%)
 #
 ################################################
 define TEMPLATE_DEP =
- FILES.$(1) = $(shell [ -d Files.$(1) ] && find Files.$(1) -type f -print)
- IMAGE.$(1) = $(BUILDDIR)/$(1).d 
+ FILES.$(1) = $(shell [ -d FILES.$(1) ] && find FILES.$(1) -type f -print)
+ IMAGE.$(1) : $(BUILDDIR)/$(1).d 
  $(BUILDDIR)/$(1).d: $$(DEPS.$(1)) $$(FILES.$(1)) $$(PREREQS.$(1)) Dockerfile.$(1)
 endef
 
@@ -88,7 +89,7 @@ realclean: clean cleandocker
 cleandir:
 	-rm -rf $(BUILDDIR)
 cleandocker:
-	-docker rmi $(IMAGES) || true
+	@-docker rmi -f $(IMAGES) || true
 
 #
 # Omit old fashioed sccs/rcs, etc searching.   Improves performance and noise on debug
