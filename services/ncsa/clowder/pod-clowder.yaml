@@ -15,14 +15,62 @@ spec:
           name: "msg-bus"
         - containerPort: 15672
           name: "mgmt-port"
-    - name: clowder-image-preview
-      image: clowder/image-preview
-    - name: clowder-video-preview
-      image: clowder/video-preview
-    - name: clowder-plantcv
-      image: clowder/plantcv
     - name: clowder-clowder
       image: clowder/clowder
       ports:
-        - containerPort: 9000
-          name: "frontend"
+      - containerPort: 9000
+        name: "clowder-ui"
+      env:
+      - name: SMTP_HOST
+        value: ""
+      - name: CLOWDER_BRANCH
+        value: "CATS-CORE0"
+      - name: CLOWDER_BUILD
+        value: "latestSuccessful"
+      - name: CLOWDER_UPDATE
+        value: "NO"
+    - name: clowder-image-preview
+      image: clowder/image-preview
+      env:
+      - name: RABBITMQ_URI
+        value: ""
+      - name: RABBITMQ_EXCHANGE
+        value: "clowder"
+      - name: RABBITMQ_VHOST
+        value: "%2F"
+      - name: RABBITMQ_QUEUE
+        value: "ncsa.image.preview"
+      - name: RABBITMQ_PORT_5672_TCP_ADDR
+        value: "localhost"
+      - name: RABBITMQ_PORT_5672_TCP_PORT
+        value: "5672"
+    - name: clowder-video-preview
+      image: clowder/video-preview
+      env:
+      - name: RABBITMQ_URI
+        value: ""
+      - name: RABBITMQ_EXCHANGE
+        value: "clowder"
+      - name: RABBITMQ_VHOST
+        value: "%2F"
+      - name: RABBITMQ_QUEUE
+        value: "ncsa.image.preview"
+      - name: RABBITMQ_PORT_5672_TCP_ADDR
+        value: "localhost"
+      - name: RABBITMQ_PORT_5672_TCP_PORT
+        value: "5672"
+    - name: clowder-plantcv
+      image: clowder/plantcv
+      env:
+      - name: RABBITMQ_URI
+        value: ""
+      - name: RABBITMQ_EXCHANGE
+        value: "clowder"
+      - name: RABBITMQ_VHOST
+        value: "%2F"
+      - name: RABBITMQ_QUEUE
+        value: "ncsa.image.preview"
+      - name: RABBITMQ_PORT_5672_TCP_ADDR
+        value: "localhost"
+      - name: RABBITMQ_PORT_5672_TCP_PORT
+        value: "5672"
