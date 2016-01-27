@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-clowder
+  labels:
+    name: clowder
+spec:
+  containers:
+    - name: clowder-mongodb
+      image: mongo:latest
+    - name: clowder-rabbitmq
+      image: rabbitmq:management
+      ports:
+        - containerPort: 5672
+          name: "msg-bus"
+        - containerPort: 15672
+          name: "mgmt-port"
+    - name: clowder-image-preview
+      image: clowder/image-preview
+    - name: clowder-video-preview
+      image: clowder/video-preview
+    - name: clowder-plantcv
+      image: clowder/plantcv
+    - name: clowder-clowder
+      image: clowder/clowder
+      ports:
+        - containerPort: 9000
+          name: "frontend"
