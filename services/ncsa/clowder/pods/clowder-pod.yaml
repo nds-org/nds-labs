@@ -22,7 +22,7 @@ spec:
         name: "clowder-ui"
       env:
       - name: SMTP_HOST
-        value: ""
+        value: "smtp.ncsa.illinois.edu"
       - name: CLOWDER_BRANCH
         value: "CATS-CORE0"
       - name: CLOWDER_BUILD

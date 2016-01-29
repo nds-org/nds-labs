@@ -14,11 +14,11 @@ if [ -z "$1" ]; then
     stop         Stops a running NDSDEV container";
 elif [ "$1" = "build" ]; then
   echo "Building..."
-  docker create --name NDSSRC -v `pwd`:/nds/src/ ubuntu:wily /bin/bash
-  docker build -t ndsdev -f devtools/ndsdev/Dockerfile.ndsdev devtools/ndsdev/
+  docker create --name NDSSRC -v `pwd`:/nds/src/ ubuntu:wily /bin/bash 
+  docker build -t ndsdev -f devtools/ndsdev/Dockerfile.ndsdev devtools/ndsdev/ || echo "Failed to build ndsdev image. Ensure ndsdevctl is called from the project root: '. ./devtools/ndsdev/ndsdevctl build'."
 elif [ "$1" = "run" ]; then
   echo "Starting NDSDEV..."
-  docker run $2 -i -t --name=NDSDEV --volumes-from=NDSSRC --privileged --rm -v /var/run/docker.sock:/var/run/docker.sock -v ~/containers:/nds/dev --net=host ndsdev /bin/bash || echo "Unable to run NDSDEV container. Try 'ndsdevctl attach' instead."
+  docker run $2 -i -t --name=NDSDEV --volumes-from=NDSSRC --privileged --rm -v /var/run/docker.sock:/var/run/docker.sock --net=host ndsdev /bin/bash || echo "Unable to run NDSDEV container. Try 'ndsdevctl attach' instead."
 elif [ "$1" = "rm" ]; then
   echo "Removing NDSDEV.. Use 'ndsdevctl start' to bring up a new instance."
   docker rm $2 NDSDEV
