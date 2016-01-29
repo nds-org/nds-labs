@@ -8,6 +8,9 @@ spec:
   containers:
     - name: clowder-mongodb
       image: mongo:latest
+      ports:
+        -  containerPort: 27017
+           name: "mongo-port"
     - name: clowder-rabbitmq
       image: rabbitmq:management
       ports:
@@ -29,11 +32,17 @@ spec:
         value: "latestSuccessful"
       - name: CLOWDER_UPDATE
         value: "NO"
+      - name: RABBITMQ_URI
+        value: "amqp://guest:guest@localhost:5672/%2F"
+      - name: RABBITMQ_EXCHANGE
+        value: "clowder"
+      - name: RABBITMQ_MGMT_PORT
+        value: "15672"
     - name: clowder-image-preview
       image: clowder/image-preview
       env:
       - name: RABBITMQ_URI
-        value: ""
+        value: "amqp://guest:guest@localhost:5672/%2F"
       - name: RABBITMQ_EXCHANGE
         value: "clowder"
       - name: RABBITMQ_VHOST
@@ -41,14 +50,18 @@ spec:
       - name: RABBITMQ_QUEUE
         value: "ncsa.image.preview"
       - name: RABBITMQ_PORT_5672_TCP_ADDR
-        value: "localhost"
+        value: "127.0.0.1"
       - name: RABBITMQ_PORT_5672_TCP_PORT
         value: "5672"
+      - name: RABBITMQ_PORT_15672_TCP_ADDR
+        value: "127.0.0.1"
+      - name: RABBITMQ_PORT_15672_TCP_PORT
+        value: "15672"
     - name: clowder-video-preview
       image: clowder/video-preview
       env:
       - name: RABBITMQ_URI
-        value: ""
+        value: "amqp://guest:guest@localhost:5672/%2F"
       - name: RABBITMQ_EXCHANGE
         value: "clowder"
       - name: RABBITMQ_VHOST
@@ -56,14 +69,14 @@ spec:
       - name: RABBITMQ_QUEUE
         value: "ncsa.video.preview"
       - name: RABBITMQ_PORT_5672_TCP_ADDR
-        value: "localhost"
+        value: "127.0.0.1"
       - name: RABBITMQ_PORT_5672_TCP_PORT
         value: "5672"
     - name: clowder-plantcv
       image: clowder/plantcv
       env:
       - name: RABBITMQ_URI
-        value: ""
+        value: "amqp://guest:guest@localhost:5672/%2F"
       - name: RABBITMQ_EXCHANGE
         value: "clowder"
       - name: RABBITMQ_VHOST
@@ -71,6 +84,6 @@ spec:
       - name: RABBITMQ_QUEUE
         value: "terra.plantcv"
       - name: RABBITMQ_PORT_5672_TCP_ADDR
-        value: "localhost"
+        value: "127.0.0.1"
       - name: RABBITMQ_PORT_5672_TCP_PORT
         value: "5672"
