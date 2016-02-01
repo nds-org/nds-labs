@@ -2,8 +2,8 @@ apiVersion: v1
 kind: Service
 metadata: 
   labels: 
-    name: clowder
-  name: clowder
+    name: clowder-clowder
+  name: clowder-clowder
 spec: 
   ports:
     # the port that this service should serve on
@@ -11,4 +11,4 @@ spec:
       targetPort: 9000
   # label keys and values that must match in order to receive traffic for this service
   selector: 
-    name: clowder
+    name: clowder-clowder
