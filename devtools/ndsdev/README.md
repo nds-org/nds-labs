@@ -1,7 +1,14 @@
 # NDS Development Environment (NDSDEV)
 
-## Setup
-### Allocate VM on Nebula
+## Prerequisites
+In order to get started developing NDS Labs, you must have an appropriate development environment.
+
+At the very least, your enviornment should include Docker. This will allow you to access any build tools you might need without cluttering your host.
+
+### Docker
+Learn more about Docker and the various ways to install it here: https://docs.docker.com/engine/installation/
+
+### Allocate VM on Nebula (Optional)
 Log into Nebula and create a VM under the project NDSLabsDev. Use the image entitled CoreCloud835.
 
 Be sure to select a size (which is paradoxically entitled "flavor").
