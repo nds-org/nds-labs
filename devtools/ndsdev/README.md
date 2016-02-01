@@ -1,29 +1,34 @@
 # NDS Development Environment (NDSDEV)
 
 ## Prerequisites
-In order to get started developing NDS Labs, you must have an appropriate development environment.
+In order to get started developing NDS Labs, you must have an appropriate development environment. We recommend using CoreOS.
 
 At the very least, your enviornment should include Docker. This will allow you to access any build tools you might need without cluttering your host.
 
 ### Docker
-Learn more about Docker and the various ways to install it here: https://docs.docker.com/engine/installation/
+Docker.io is a containerization technology that is blowing up right now in popularity.
 
-### Allocate VM on Nebula (Optional)
+Learn more about how to use Docker: https://docs.docker.com/linux/
+
+### CoreOS
+CoreOS is an extremely minimalistic Linux distro. It ships with etcd, docker, and fleetctl (notice: no package manager) with the main idea being that docker containers can provide any type of environment that would suit your current task.
+
+Learn more about what's included in CoreOS: https://coreos.com/using-coreos/
+
+### Allocate VM on OpenStack Nebula (Optional)
 Log into Nebula and create a VM under the project NDSLabsDev. Use the image entitled CoreCloud835.
 
 Be sure to select a size (which is paradoxically entitled "flavor").
 
 If you are unsure which to use, you likely should be using "large" or "medium".
 
-
-#### Networking Gotchas
+#### OpenStack Nebula Security
 
 **DO NOT** forget to generate / import an SSH key for this machine, or else you will never be able to get into it.
 
-Be sure to add Permissions to this VM:
+Be sure to add **Permissions** to this VM:
 * remote SSH
 * remote HTTP
-
 
 ### Clone the Source Repo
 To start, you will need the code. Clone it and change into the new directory:
@@ -33,7 +38,6 @@ cd nds-labs/
 ~~~
 
 NOTE: Once we have an NDSDEV image circulating (potentially in DockerHub?), this step should no longer be necessary.
-
 
 ### Build (or Remove) NDSDEV Image
 Execute the following command at the project root to build up the ndsdev image:
