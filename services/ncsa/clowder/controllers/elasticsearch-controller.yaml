@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: clowder-elasticsearch
+  labels:
+    name: clowder-elasticsearch
+spec:
+  replicas: 1
+  selector:
+    name: clowder-elasticsearch
+  template:
+    metadata:
+      labels:
+        name: clowder-elasticsearch
+    spec:
+      containers:
+      - name: clowder-elasticsearch
+        image: elasticsearch:latest
+        ports:
+        - containerPort: 9200
+        - containerPort: 9300
