@@ -26,7 +26,7 @@ spec:
         - name: CLOWDER_BUILD
           value: "latestSuccessful"
         - name: CLOWDER_UPDATE
-          value: "NO"
+          value: "YES"
         - name: MONGO_URI
           value: "mongodb://$(CLOWDER_MONGODB_PORT_27017_TCP_ADDR):$(CLOWDER_MONGODB_PORT_27017_TCP_PORT)/clowder"
         - name: RABBITMQ_URI

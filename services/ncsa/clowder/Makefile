@@ -4,7 +4,6 @@ VERSION = 1.0
 # include $(NDSLABS_SRC)/devtools/Makefiles/Makefile.nds
 
 all-from-src:
-	make git-src
 	make python-base-from-src
 	make clowder-from-src
 	make image-preview-from-src

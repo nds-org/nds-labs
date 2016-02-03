@@ -4,11 +4,17 @@ metadata:
   labels: 
     name: clowder-clowder
   name: clowder-clowder
-spec: 
+spec:
+  type: NodePort 
   ports:
     # the port that this service should serve on
-    - port: 80
+    - port: 9000
       targetPort: 9000
+      nodePort: 30291
+      name: "clowder-ui"
+    - port: 8080
+      targetPort: 8080
+      name: "versus-ui"
   # label keys and values that must match in order to receive traffic for this service
   selector: 
     name: clowder-clowder
