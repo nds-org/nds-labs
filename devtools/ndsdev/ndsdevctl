@@ -5,25 +5,30 @@ if [ -z "$1" ]; then
   echo "Usage: ndsdevctl <command>
   where command is one of the following:
     attach       Open a console to the running instance of NDSDEV
-    build        Create a NDSSRC container and build the ndsdev image
+    build        Create a NDSSRC container and build the ndslabs/ndsdev image
+    pull         Pull the ndslabs/ndsdev image from Docker Hub
     restart      Stop the NDSDEV container and start it again
     rm           Removes the NDSDEV container
-    rmi          Removes the ndsdev image
+    rmi          Removes the ndslabs/ndsdev image
     run          Run the NDSDEV Development Environment
     start        Start the NDSDEV container
-    stop         Stops a running NDSDEV container";
+    stop         Stops a running NDSDEV container"
+elif [ "$1" = "pull" ]; then
+  echo "Pulling image from Docker Hub: ndslabs/ndsdev"
+  docker pull ndslabs/ndsdev:latest
 elif [ "$1" = "build" ]; then
-  echo "Building..."
+  echo "Building image: ndslabs/ndsdev"
   docker create --name NDSSRC -v `pwd`:/nds/src/ ubuntu:wily /bin/bash 
-  docker build $2 -t ndsdev -f devtools/ndsdev/Dockerfile.ndsdev devtools/ndsdev/ || echo "Failed to build ndsdev image. Ensure ndsdevctl is called from the project root: '. ./devtools/ndsdev/ndsdevctl build'."
+  docker build $2 -t ndslabs/ndsdev -f devtools/ndsdev/Dockerfile.ndsdev devtools/ndsdev/ || echo "Failed to build ndsdev image. Ensure ndsdevctl is called from the project root: '. ./devtools/ndsdev/ndsdevctl build'."
 elif [ "$1" = "run" ]; then
-  echo "Starting NDSDEV..."
-  docker run $2 -i -t --name=NDSDEV --volumes-from=NDSSRC --privileged --rm -v /var/run/docker.sock:/var/run/docker.sock --net=host ndsdev /bin/bash || echo "Unable to run NDSDEV container. Try 'ndsdevctl attach' instead."
+  echo "Starting NDSDEV container..."
+  docker run $2 -i -t --name=NDSDEV --volumes-from=NDSSRC --privileged --rm -v /var/run/docker.sock:/var/run/docker.sock --net=host ndslabs/ndsdev /bin/bash || echo "Unable to run NDSDEV container. Try 'ndsdevctl attach' instead."
 elif [ "$1" = "rm" ]; then
-  echo "Removing NDSDEV.. Use 'ndsdevctl start' to bring up a new instance."
+  echo "Removing NDSDEV container.. Use 'ndsdevctl start' to bring up a new instance."
   docker rm $2 NDSDEV
 elif [ "$1" = "rmi" ]; then
-  docker rmi $2 ndsdev
+  echo "Removing image: ndslabs/ndsdev"
+  docker rmi $2 ndslabs/ndsdev
 elif [ "$1" = "start" ]; then
   docker start NDSDEV || echo "No NDSDEV container exists. Try 'ndsdevctl build' followed by 'ndsdevctl run' instead."
 elif [ "$1" = "stop" ]; then
