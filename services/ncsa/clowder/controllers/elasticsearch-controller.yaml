@@ -19,4 +19,5 @@ spec:
         ports:
         - containerPort: 9200
         - containerPort: 9300
+        # command: [ "/usr/share/elasticsearch/bin/elasticsearch" ]
         args: [ "-Des.cluster.name=medici" ]
