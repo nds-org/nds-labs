@@ -15,7 +15,8 @@ spec:
     spec:
       containers:
       - name: clowder-elasticsearch
-        image: elasticsearch:latest
+        image: elasticsearch:1.3
         ports:
         - containerPort: 9200
         - containerPort: 9300
+        args: [ "-Des.cluster.name=medici" ]
