@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: clowder-mongodb
+  labels:
+    name: clowder-mongodb
+spec:
+  replicas: 1
+  selector:
+    name: clowder-mongodb
+  template:
+    metadata:
+      labels:
+        name: clowder-mongodb
+    spec:
+      containers:
+      - name: clowder-mongodb
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        # args:
+        # - "--rest"
+        # - "--httpinterface" 

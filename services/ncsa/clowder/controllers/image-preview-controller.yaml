@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: clowder-image-preview
+  labels:
+    name: clowder-image-preview
+spec:
+  replicas: 1
+  selector:
+    name: clowder-image-preview
+  template:
+    metadata:
+      labels:
+        name: clowder-image-preview
+    spec:
+      containers:
+      - name: clowder-image-preview
+        image: clowder/image-preview
+        env:
+        - name: RABBITMQ_URI
+          value: "amqp://guest:guest@$(CLOWDER_RABBITMQ_PORT_5672_TCP_ADDR):$(CLOWDER_RABBITMQ_PORT_5672_TCP_PORT)/%2F"
+        - name: RABBITMQ_EXCHANGE
+          value: "clowder"
+        - name: RABBITMQ_VHOST
+          value: "%2F"
+        - name: RABBITMQ_QUEUE
+          value: "ncsa.image.preview"
+        - name: RABBITMQ_PORT_5672_TCP_ADDR
+          value: "$(CLOWDER_RABBITMQ_PORT_5672_TCP_ADDR)"
+        - name: RABBITMQ_PORT_5672_TCP_PORT
+          value: "$(CLOWDER_RABBITMQ_PORT_5672_TCP_PORT)"
+        - name: RABBITMQ_PORT_15672_TCP_ADDR
+          value: "$(CLOWDER_RABBITMQ_PORT_15672_TCP_ADDR)"
+        - name: RABBITMQ_PORT_15672_TCP_PORT
+          value: "$(CLOWDER_RABBITMQ_PORT_15672_TCP_PORT)"
