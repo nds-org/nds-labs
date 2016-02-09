@@ -26,10 +26,7 @@ include $(SELF_DIR)/gmsl
 
 BUILDFILES		= $(IMAGES:%=Dockerfile.%)
 TIMESTAMPS		= $(IMAGES:%=$(BUILDDIR)/%.d)
-TAGNAMES		= $(NAME):$(VERSION)
-FULLNAME		= $(ORG)/$(NAME)
-FULLVERSNAME	= $(ORG)/$(NAME):$(VERSION)
-ORG			?= ndslabs
+ORG				?= ndslabs
 
 all: 		$(TIMESTAMPS)
 .PHONY:		all clean realclean ALWAYS
@@ -80,6 +77,15 @@ define TEMPLATE_DEP =
 endef
 
 $(foreach p,$(IMAGES),$(eval $(call TEMPLATE_DEP,$(p))))
+
+################################################
+#
+# Push to hub (does not do docker login for you) 
+#
+################################################
+HUBPUSH = $(HUB_IMAGES:%=$(ORG)/%)
+push:
+	$(foreach img,$(HUBPUSH), docker push $(img))
 
 ################################################
 #
