@@ -1,9 +1,19 @@
 FROM ubuntu
 RUN apt-get -y update \
-    && apt-get -y install make docker.io git vim wget curl unzip \
+    && apt-get -y install --no-install-recommends \
+        make \
+        git \
+        vim \
+        docker.io \
+        wget \
+        curl \
+        unzip \
+        ca-certificates \
     && apt-get -y clean all \
-    && rm -rf /var/lib/apt/lists/* \
-    ;
+    && rm -rf /var/lib/apt/lists/*
+#    && wget -O `which docker` https://get.docker.com/builds/Linux/x86_64/docker-latest \
+#    && chmod a+x `which docker` \
+#    ;
 
 ADD https://storage.googleapis.com/kubernetes-release/release/v1.0.3/bin/linux/amd64/kubectl /usr/local/bin/
 ADD https://github.com/docker/compose/releases/download/1.6.0-rc1/docker-compose-Linux-x86_64 /usr/local/bin/docker-compose
@@ -18,3 +28,4 @@ RUN echo 'export PS1="[\u@NDSDEV ] \W # "' >> /root/.bashrc
 #LABEL runcmd "docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock"
 VOLUME /nds/src
 
+WORKDIR /nds/src

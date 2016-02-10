@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: clowder-clowder
+  labels:
+    name: clowder-clowder
+spec:
+  replicas: 1
+  selector:
+    name: clowder-clowder
+  template:
+    metadata:
+      labels:
+        name: clowder-clowder
+    spec:
+      containers:
+      - name: clowder-clowder
+        image: clowder/clowder
+        ports:
+        - containerPort: 9000
+        env:
+        - name: SMTP_HOST
+          value: "smtp.ncsa.illinois.edu"
+        - name: CLOWDER_BRANCH
+          value: "CATS-CORE0"
+        - name: CLOWDER_BUILD
+          value: "latestSuccessful"
+        - name: CLOWDER_UPDATE
+          value: "YES"
+        - name: MONGO_URI
+          value: "mongodb://$(CLOWDER_MONGODB_PORT_27017_TCP_ADDR):$(CLOWDER_MONGODB_PORT_27017_TCP_PORT)/clowder"
+        - name: RABBITMQ_URI
+          value: "amqp://guest:guest@$(CLOWDER_RABBITMQ_PORT_5672_TCP_ADDR):$(CLOWDER_RABBITMQ_PORT_5672_TCP_PORT)/%2F"
+        - name: RABBITMQ_EXCHANGE
+          value: "clowder"
+        - name: RABBITMQ_MGMT_PORT
+          value: "$(CLOWDER_RABBITMQ_PORT_15672_TCP_PORT)"
