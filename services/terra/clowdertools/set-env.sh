@@ -10,10 +10,9 @@ export TOOLSRV_ADDR=10.0.0.120
 export TOOLSRV_PORT=8082
 
 # Request metadata
-export TOOLSRV_UNAME=lambert8@illinois.edu
-export TOOLSRV_PW=testtest
+export CLOWDER_KEY=r1ek3rs
 export TOOLSRV_TARGET_DATASET=56ba103be4b01696e6f1cd07
 
-echo "${TOOLSRV_UNAME}:******** is requesting dataset ${TOOLSRV_TARGET_DATASET}"
+echo "Requesting dataset ${TOOLSRV_TARGET_DATASET} using key=${CLOWDER_KEY}"
 echo "${CLOWDER_ADDR}:${CLOWDER_PORT} <-> ${TOOLSRV_ADDR}:${TOOLSRV_PORT}"
 echo ""
