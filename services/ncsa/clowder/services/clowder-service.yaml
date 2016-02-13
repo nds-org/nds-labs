@@ -2,8 +2,8 @@ apiVersion: v1
 kind: Service
 metadata: 
   labels: 
-    name: clowder-clowder
-  name: clowder-clowder
+    name: clowder
+  name: clowder
 spec:
   type: NodePort 
   ports:
@@ -14,4 +14,4 @@ spec:
       name: "clowder-ui"
   # label keys and values that must match in order to receive traffic for this service
   selector: 
-    name: clowder-clowder
+    name: clowder

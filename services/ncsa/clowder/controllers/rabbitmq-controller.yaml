@@ -1,20 +1,20 @@
 apiVersion: v1
 kind: ReplicationController
 metadata:
-  name: clowder-rabbitmq
+  name: rabbitmq
   labels:
-    name: clowder-rabbitmq
+    name: rabbitmq
 spec:
   replicas: 1
   selector:
-    name: clowder-rabbitmq
+    name: rabbitmq
   template:
     metadata:
       labels:
-        name: clowder-rabbitmq
+        name: rabbitmq
     spec:
       containers:
-      - name: clowder-rabbitmq
+      - name: rabbitmq
         image: rabbitmq:management
         ports:
         - containerPort: 5672

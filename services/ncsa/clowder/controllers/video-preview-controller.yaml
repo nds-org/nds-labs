@@ -1,35 +1,27 @@
 apiVersion: v1
 kind: ReplicationController
 metadata:
-  name: clowder-video-preview
+  name: video-preview
   labels:
-    name: clowder-video-preview
+    name: video-preview
 spec:
   replicas: 1
   selector:
-    name: clowder-video-preview
+    name: video-preview
   template:
     metadata:
       labels:
-        name: clowder-video-preview
+        name: video-preview
     spec:
       containers:
-      - name: clowder-video-preview
-        image: clowder/video-preview
+      - name: video-preview
+        image: ndslabs/video-preview:latest
         env:
-        - name: RABBITMQ_URI
-          value: "amqp://guest:guest@$(CLOWDER_RABBITMQ_PORT_5672_TCP_ADDR):$(CLOWDER_RABBITMQ_PORT_5672_TCP_PORT)/%2F"
+#        - name: RABBITMQ_URI
+#          value: "amqp://guest:guest@$(RABBITMQ_PORT_5672_TCP_ADDR):$(RABBITMQ_PORT_5672_TCP_PORT)/%2F"
         - name: RABBITMQ_EXCHANGE
           value: "clowder"
         - name: RABBITMQ_VHOST
           value: "%2F"
         - name: RABBITMQ_QUEUE
           value: "ncsa.video.preview"
-        - name: RABBITMQ_PORT_5672_TCP_ADDR
-          value: "$(CLOWDER_RABBITMQ_PORT_5672_TCP_ADDR)"
-        - name: RABBITMQ_PORT_5672_TCP_PORT
-          value: "$(CLOWDER_RABBITMQ_PORT_5672_TCP_PORT)"
-        - name: RABBITMQ_PORT_15672_TCP_ADDR
-          value: "$(CLOWDER_RABBITMQ_PORT_15672_TCP_ADDR)"
-        - name: RABBITMQ_PORT_15672_TCP_PORT
-          value: "$(CLOWDER_RABBITMQ_PORT_15672_TCP_PORT)"
