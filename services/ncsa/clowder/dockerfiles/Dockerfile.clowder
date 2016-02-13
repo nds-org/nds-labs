@@ -39,7 +39,7 @@ RUN cd /home/clowder && \
 VOLUME /home/clowder/clowder/custom
 
 # command to run when starting docker
-COPY entrypoint.sh /
+COPY FILES.clowder/ /
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["server"]
 

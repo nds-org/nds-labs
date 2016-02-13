@@ -18,6 +18,6 @@ RUN cd /home/clowder && \
     git clone https://opensource.ncsa.illinois.edu/stash/scm/cats/extractors-video.git
 
 # command to run when starting docker
-COPY entrypoint.sh /
+COPY FILES.video-preview/ /
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["extractor"]

@@ -85,7 +85,7 @@ RUN cd ${CLOWDER_HOME} && \
 
 USER root
 # Copy the helper script.
-COPY start.sh ${EXTRACTOR_HOME}/
+COPY FILES.plantcv/ ${EXTRACTOR_HOME}/
 RUN chown clowder ${EXTRACTOR_HOME}/start.sh && \
     chmod 755 ${EXTRACTOR_HOME}/start.sh
 
