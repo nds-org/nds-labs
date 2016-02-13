@@ -5,6 +5,8 @@
 kubectl create -f services/clowder-service.yaml
 kubectl create -f services/mongo-service.yaml
 
+echo "Starting MongoDB..."
+
 # Now create our first phase of replication controllers (which will create some pods)
 kubectl create -f controllers/mongo-controller.yaml
 
@@ -45,4 +47,5 @@ done
 
 # Now start clowder itself
 echo "Starting Clowder..."
+sleep 10s
 kubectl create -f controllers/clowder-controller.yaml
