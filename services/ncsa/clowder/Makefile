@@ -1,4 +1,4 @@
-IMAGES	= clowderctl-dev clowderctl
+IMAGES	= clowder image-preview video-preview plantcv
 ORG 	= NDS
 VERSION = 1.0
 # include $(NDSLABS_SRC)/devtools/Makefiles/Makefile.nds
@@ -17,17 +17,6 @@ all:
 	make video-preview
 	make plantcv 
 
-IMAGE.clowderctl: $(BUILDDIR)/clowderctl
-#
-# Build the clowder binary in $(DEPS)
-# dev image builds the binary and installs in /build
-# 
-$(BUILDDIR)/clowderctl: IMAGE.clowderctl-dev
-	docker run --rm -v `pwd`/$(DEPS):/build clowderctl-dev
-
-livedev:
-	docker run --rm -it -v /var/run/docker.sock:/var/run/docker.sock -v `pwd`:/go/src/clowderctl clowderctl-dev bash
-
 clean:
 	make clean-src
 	docker rmi clowder/python-base:latest
@@ -37,7 +26,7 @@ clean:
 	docker rmi clowder/clowder:latest
 
 python-base:
-	docker pull ndslabs/python-base:latest
+	docker pull ncsa/clowder-python-base:latest
 
 image-preview:
 	docker pull ndslabs/image-preview:latest
@@ -58,16 +47,16 @@ clean-src:
 	rm -rf dockerfiles/
 
 python-base-from-src:
-	docker build -t clowder/python-base:latest dockerfiles/clowder/python-base
+	docker build -t ncsa/clowder-python-base:latest dockerfiles/clowder/python-base
 
 clowder-from-src:
-	docker build -t clowder/clowder:latest dockerfiles/clowder/clowder
+	docker build -t ndslabs/clowder:latest dockerfiles/clowder/clowder
 
 image-preview-from-src:
-	docker build -t clowder/image-preview:latest dockerfiles/clowder/image-preview
+	docker build -t ndslabs/image-preview:latest dockerfiles/clowder/image-preview
 
 video-preview-from-src:
-	docker build -t clowder/video-preview:latest dockerfiles/clowder/video-preview
+	docker build -t ndslabs/video-preview:latest dockerfiles/clowder/video-preview
 
 plantcv-from-src:
-	docker build -t clowder/plantcv:latest dockerfiles/clowder/plantcv
+	docker build -t ndslabs/plantcv:latest dockerfiles/clowder/plantcv
