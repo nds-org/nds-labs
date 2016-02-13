@@ -27,17 +27,7 @@ spec:
           value: "latestSuccessful"
         - name: CLOWDER_UPDATE
           value: "YES"
-#        - name: MONGO_URI
-#          value: "mongodb://$(MONGODB_PORT_27017_TCP_ADDR):$(MONGODB_PORT_27017_TCP_PORT)/clowder"
-#        - name: ELASTICSEARCH_SERVER
-#          value: "$(ELASTICSEARCH_PORT_9300_TCP_ADDR)
-#        - name: ELASTICSEARCH_PORT
-#          value: $(ELASTICSEARCH_PORT_9300_TCP_PORT)"
         - name: ELASTICSEARCH_CLUSTERNAME
           value: "clowder"
-#        - name: RABBITMQ_URI
-#          value: "amqp://guest:guest@$(RABBITMQ_PORT_5672_TCP_ADDR):$(RABBITMQ_PORT_5672_TCP_PORT)/%2F"
         - name: RABBITMQ_EXCHANGE
           value: "clowder"
-#        - name: RABBITMQ_MGMT_PORT
-#          value: "$(RABBITMQ_PORT_15672_TCP_PORT)"
