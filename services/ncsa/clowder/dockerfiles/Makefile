@@ -1,3 +1,3 @@
 HUBIMAGES=clowder image-preview video-preview plantcv
-IMAGES=$(HUBIMAGES) 
+IMAGES=$(HUBIMAGES) python-base 
 include ../../../../devtools/Makefiles/Makefile.nds

@@ -30,7 +30,7 @@ if [ "$ELASTICSEARCH_SERVER" == "" ]; then
 fi
 if [ "$ELASTICSEARCH_PORT" == "" ]; then
     if [ -n "$ELASTICSEARCH_PORT_9300_TCP_PORT" ]; then
-        ELASTICSEARCH_PORT="$ELASTICSEARCH_PORT_9300_TCP_PORT"
+        ELASTICSEARCH_PORT=$ELASTICSEARCH_PORT_9300_TCP_PORT
     fi
 fi
 
@@ -81,22 +81,7 @@ function fix_conf() {
 
 # start server if asked
 if [ "$1" = 'server' ]; then
-    # fetch latest if not done
-    if [ "${CLOWDER_UPDATE}" != "NO" ]; then
-        echo "UPDATING CLOWDER TO LATEST VERSION ... PLEASE WAIT"
-        cd /home/clowder
-        case ${CLOWDER_BUILD} in latest*) BB="${CLOWDER_BRANCH}/${CLOWDER_BUILD}" ;; *) BB="${CLOWDER_BRANCH}-${CLOWDER_BUILD}" ;; esac
-        /usr/bin/wget -q -e robots=off -A "clowder-*.zip" -nd -r -N -l1 https://opensource.ncsa.illinois.edu/bamboo/browse/${BB}/artifact/JOB1/dist/
-        LATEST=$( /bin/ls -1rt clowder-*.zip | tail -1 )
-        /usr/bin/unzip -q ${LATEST}
-        cd $( basename ${LATEST} .zip )
-        for x in *; do
-            /bin/rm -rf ../clowder/$x
-            /bin/mv $x ../clowder
-        done
-        cd ..
-        rmdir $( basename ${LATEST} .zip )
-    fi
+    # TODO: Eventually, this config should be generated on deployment and stored in etcd
 
     # rabbitmq
     fix_plugin "$RABBITMQ_URI" "9992" "services.RabbitmqPlugin"
