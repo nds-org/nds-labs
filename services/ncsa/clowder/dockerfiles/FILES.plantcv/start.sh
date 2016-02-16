@@ -11,15 +11,6 @@ if [ "$RABBITMQ_URI" == "" ]; then
     fi
 fi
 
-# If a branch name is given, switch to it.
-if [ -n "$EXTR_BRANCH" ]; then
-    git fetch
-    git checkout $EXTR_BRANCH
-fi
-
-# update extractor code everytime we build
-git pull
-
 # Set plantcv env var
 /bin/sed -i -e "s#exRootPath =.*#exRootPath = '${CLOWDER_HOME}/extractors-plantcv'#" config.py
 /bin/sed -i -e "s#plantcvOutputDir =.*#plantcvOutputDir = '${CLOWDER_HOME}/plantcv-output'#" config.py
