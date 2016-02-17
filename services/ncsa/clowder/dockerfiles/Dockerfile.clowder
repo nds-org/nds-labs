@@ -4,10 +4,10 @@ MAINTAINER Rob Kooper <kooper@illinois.edu>
 
 # expose some properties of the container
 EXPOSE 9000
-ENV CLOWDER_BRANCH="CATS-CORE0" \
+ENV CLOWDER_BRANCH="CATS-CORE" \
 	CLOWDER_BUILD="latestSuccessful" \
 	CLOWDER_CONTEXT="/" \
-	CLOWDER_UPDATE="YES" \
+	CLOWDER_UPDATE="NO" \
 	MONGO_URI="" \
 	SMTP_HOST="" \
 	RABBITMQ_EXCHANGE="clowder" \

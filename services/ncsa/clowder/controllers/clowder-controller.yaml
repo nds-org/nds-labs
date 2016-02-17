@@ -29,5 +29,9 @@ spec:
           value: "YES"
         - name: ELASTICSEARCH_CLUSTERNAME
           value: "clowder"
+#        - name: ELASTICSEARCH_SERVER
+#          value: "$(ELASTICSEARCH_PORT_9300_TCP_ADDR)"
+        - name: ELASTICSEARCH_PORT
+          value: "$(ELASTICSEARCH_PORT_9300_TCP_PORT)"
         - name: RABBITMQ_EXCHANGE
           value: "clowder"
