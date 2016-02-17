@@ -51,21 +51,21 @@ These scripts were written to aid in debugging failing pods, which have a very l
 
 ## . ./logs.sh <container name>
 Display the logs of a container who shares the same name (template) as its pod.
-~~
+~~~
 . ./logs.sh rabbitmq
-~~
+~~~
 
 ## . ./exec.sh <container name>
 Execute an arbitrary command on a container who shares the same name as its pods.
-~~
+~~~
 . ./exec.sh mongo "curl -L http://${RABBITMQ_PORT_5672_TCP_ADDR}:${RABBITMQ_PORT_5672_TCP_PORT}"
-~~
+~~~
 
 ## . ./env.sh <container name>
 Print all enviornment variables present in the given container who shares the same name as its pod.
-~~
+~~~
 . ./env.sh clowder
-~~
+~~~
 
 # Test Cases
 
@@ -73,11 +73,11 @@ Print all enviornment variables present in the given container who shares the sa
 * From **services/ncsa/clowder/dockerfiles**, run the **make** command.
 * You should see the images start building from the Dockerfiles present.
 * Images that will be built include:
-** python-base
-** clowder
-** image-preview
-** video-preview
-** plantcv
+* * python-base
+* * clowder
+* * image-preview
+* * video-preview
+* * plantcv
 
 **WARNING**: plantcv may take up to 25 minutes to complete its build. Plan accodingly.
 
@@ -85,7 +85,7 @@ Print all enviornment variables present in the given container who shares the sa
 * Run **. ./start-clowder.sh** with no arguments to spin up a vanilla Clowder, with only a MongoDB instance attached.
 * Navigate your browser to **http://YOUR_OPENSTACK_IP:30291**. You should see the Clowder homepage.
 * Verify MongoDB attachment by navigating to **http://YOUR_OPENSTACK_IP:30291/api/status**.
-** You should see **mongodb: true** listed under the "plugins" section.
+* * You should see **mongodb: true** listed under the "plugins" section.
 
 ## Account Registration
 * Start Clowder (as described above)
@@ -105,17 +105,17 @@ Now that you've seen the basic setup, let's try something a little more complex:
 
 * Stop any running Clowder / plugin instances: **. ./stop-clowder.sh**
 * Restart Clowder with some extractors: **. ./start-clowder.sh -w image-preview plantcv video-preview**
-** The script should automatically start RabbitMQ for you as well, since you have specified that you would like to utilize extractors.
+* * The script should automatically start RabbitMQ for you as well, since you have specified that you would like to utilize extractors.
 * Wait for everything to finish starting everything up (this may take up to ~1 minute)
 * Once Clowder starts, verify that the extractors are present by navigating to **http://YOUR_OPENSTACK_IP:30291/api/status**
-** You should see **rabbitmq: true** listed under the "plugins" section.
-** You should see the extractors you specified listed at the bottom
+* * You should see **rabbitmq: true** listed under the "plugins" section.
+* * You should see the extractors you specified listed at the bottom
 * Register for an account as described above.
 * Create a Dataset and upload a file as described above.
-** Check the log(s) of each extractor and you should see it doing work on the file(s) you chose to upload
+* * Check the log(s) of each extractor and you should see it doing work on the file(s) you chose to upload
 
 ## Text-Based Search (ElasticSearch)
 * Stop any running Clowder / plugin instances: **. ./stop-clowder.sh**
 * Restart Clowder with elasticsearch enabled: **. ./start-clowder.sh elasticsearch**
 * Once Clowder starts, verify that elasticsearch is enabled by navigating to **http://YOUR_OPENSTACK_IP:30291/api/status**
-** You should see **elasticsearch: true** listed under the "plugins" section.
+* * You should see **elasticsearch: true** listed under the "plugins" section.
