@@ -23,6 +23,7 @@ These images should all be pushed to docker hub. Simply running the following co
 
 Running the start script will bring up clowder. Be sure to give it a space-separated list of plugins / extractors that you would like to bring up:
 ~~~
+cd services/ncsa/clowder/
 . ./start-clowder.sh <plugin1> <plugin2> ...
 ~~~
 
