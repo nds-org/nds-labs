@@ -21,16 +21,10 @@ spec:
         env:
         - name: SMTP_HOST
           value: "smtp.ncsa.illinois.edu"
-        - name: CLOWDER_BRANCH
-          value: "CATS-CORE0"
-        - name: CLOWDER_BUILD
-          value: "latestSuccessful"
-        - name: CLOWDER_UPDATE
-          value: "YES"
         - name: ELASTICSEARCH_CLUSTERNAME
           value: "clowder"
-#        - name: ELASTICSEARCH_SERVER
-#          value: "$(ELASTICSEARCH_PORT_9300_TCP_ADDR)"
+        - name: ELASTICSEARCH_SERVER
+          value: "$(ELASTICSEARCH_PORT_9300_TCP_ADDR)"
         - name: ELASTICSEARCH_PORT
           value: "$(ELASTICSEARCH_PORT_9300_TCP_PORT)"
         - name: RABBITMQ_EXCHANGE
