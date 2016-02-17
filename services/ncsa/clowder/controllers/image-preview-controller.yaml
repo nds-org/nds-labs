@@ -15,10 +15,8 @@ spec:
     spec:
       containers:
       - name: image-preview
-        image: ndslabs/image-preview:latest
+        image: ndslabs/image-preview:0.9.1
         env:
-#        - name: RABBITMQ_URI
-#          value: "amqp://guest:guest@$(RABBITMQ_PORT_5672_TCP_ADDR):$(RABBITMQ_PORT_5672_TCP_PORT)/%2F"
         - name: RABBITMQ_EXCHANGE
           value: "clowder"
         - name: RABBITMQ_VHOST

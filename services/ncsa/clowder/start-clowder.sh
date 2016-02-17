@@ -1,7 +1,18 @@
 #!/bin/bash
 
+# Exit on error?
+# set -e
+
+# Check for optional arguments (-w)
+WAIT="false"
+if [[ "${@/#-w/ }" != "$@" ]]; then
+        echo "User has chosen to wait for services before continuing."
+        WAIT="true"
+fi
+
 # Create required services first
 # This will inject environment variables for each into any pods started after the service
+echo "Allocating service IPs..."
 kubectl create -f services/clowder-service.yaml
 kubectl create -f services/mongo-service.yaml
 
@@ -13,6 +24,12 @@ kubectl create -f controllers/mongo-controller.yaml
 REQ_ES="elasticsearch"
 REQ_RABBITMQ=(plantcv image-preview video-preview)
 OPTIONAL_PLUGINS=(plantcv image-preview video-preview elasticsearch)
+
+# Check for optional arguments (-w)
+if [[ "${@/#-w/ }" != "$@" ]]; then
+	echo "User has chosen to wait for services before continuing."
+	WAIT=true
+fi
 
 # Check for optional plugin with no dependencies (elasticsearch)
 if [[ "${@/#$REQ_ES/ }" != "$@" ]] ; then
@@ -26,11 +43,13 @@ for i in "${REQ_RABBITMQ[@]}"; do
 		echo "Extractors require RabbitMQ... Starting RabbitMQ..."
 		kubectl create -f services/rabbitmq-service.yaml
 		kubectl create -f controllers/rabbitmq-controller.yaml
-		echo "Waiting for RabbitMQ to be ready..."
 
 		# TODO: Need a better way to wait for RabbitMQ to come up
 		# netcat? create a simple 'kubectl wait' script?
-		sleep 45s
+		if [[ "$WAIT" == "true" ]]; then
+			echo "Waiting for RabbitMQ to be ready..."
+			sleep 45s
+		fi
 		break
 	fi
 done
@@ -47,5 +66,7 @@ done
 
 # Now start clowder itself
 echo "Starting Clowder..."
-sleep 10s
+if [[ "$WAIT" == "true" ]]; then
+	sleep 10s
+fi
 kubectl create -f controllers/clowder-controller.yaml

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: clowder
-        image: ndslabs/clowder:latest
+        image: ndslabs/clowder:0.9.1
         ports:
         - containerPort: 9000
         env:

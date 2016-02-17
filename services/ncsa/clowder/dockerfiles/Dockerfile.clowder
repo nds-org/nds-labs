@@ -4,10 +4,10 @@ MAINTAINER Rob Kooper <kooper@illinois.edu>
 
 # expose some properties of the container
 EXPOSE 9000
-ENV CLOWDER_BRANCH=CATS-CORE \
-	CLOWDER_BUILD=latestSuccessful \
+ENV CLOWDER_BRANCH="CATS-CORE0" \
+	CLOWDER_BUILD="latestSuccessful" \
 	CLOWDER_CONTEXT="/" \
-	CLOWDER_UPDATE="NO" \
+	CLOWDER_UPDATE="YES" \
 	MONGO_URI="" \
 	SMTP_HOST="" \
 	RABBITMQ_EXCHANGE="clowder" \
@@ -19,11 +19,7 @@ ENV CLOWDER_BRANCH=CATS-CORE \
 	ELASTICSEARCH_PORT=""
 
 # install requirements
-RUN apt-get update && \
-    apt-get -y install \
-	unzip \
-	wget && \
-    useradd -m -s /bin/bash clowder
+RUN useradd -m -s /bin/bash clowder
 
 # install clowder
 USER clowder
