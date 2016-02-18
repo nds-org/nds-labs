@@ -8,7 +8,7 @@ Once NDSDEV is running, you should be inside of a docker container running every
 
 Now we will need a blank kubernetes cluster running. Simply run the script provided here:
 ~~~
-. ./cluster/k8s/localdev/kube-up-local.sh
+./cluster/k8s/localdev/kube-up-local.sh
 ~~~
 
 Docker should download all of the required images from Google and run them as containers.
@@ -24,7 +24,7 @@ These images should all be pushed to docker hub. Simply running the following co
 Running the start script will bring up clowder. Be sure to give it a space-separated list of plugins / extractors that you would like to bring up:
 ~~~
 cd services/ncsa/clowder/
-. ./start-clowder.sh <plugin1> <plugin2> ...
+./start-clowder.sh <plugin1> <plugin2> ...
 ~~~
 
 Accepted plugin values can be found below:
@@ -41,30 +41,34 @@ Optional arguments:
 # Stopping Clowder
 Simply run the stop script to stop clowder:
 ~~~
-. ./stop-clowder.sh
+./stop-clowder.sh
 ~~~
+
+You can optionally specify the **-m** parameter to stop everything but MongoDB.
+
+This can be useful for preserving credentials, so that you do not need to re-signup for Clowder whenever you restart things.
 
 # Tips and Tricks
 Included in **${PROJECT_ROOT}/cluster/k8s/localdev/** are several exceedingly simple scripts to aid in debugging inside of pods.
 
 These scripts were written to aid in debugging failing pods, which have a very limited timing window where you can read their logs. With the replication controllers creating pods that are named from a template, this can be very frustrating.
 
-## . ./logs.sh <container name>
+## kube-logs.sh <container name>
 Display the logs of a container who shares the same name (template) as its pod.
 ~~~
-. ./logs.sh rabbitmq
+./kube-logs.sh rabbitmq
 ~~~
 
-## . ./exec.sh <container name>
+## kube-exec.sh <container name>
 Execute an arbitrary command on a container who shares the same name as its pods.
 ~~~
-. ./exec.sh mongo "curl -L http://${RABBITMQ_PORT_5672_TCP_ADDR}:${RABBITMQ_PORT_5672_TCP_PORT}"
+./kube-exec.sh mongo "curl -L http://${RABBITMQ_PORT_5672_TCP_ADDR}:${RABBITMQ_PORT_5672_TCP_PORT}"
 ~~~
 
-## . ./env.sh <container name>
+## kube-env.sh <container name>
 Print all enviornment variables present in the given container who shares the same name as its pod.
 ~~~
-. ./env.sh clowder
+./kube-env.sh clowder
 ~~~
 
 # Test Cases
@@ -104,19 +108,22 @@ Print all enviornment variables present in the given container who shares the sa
 ## Extractor(s)
 Now that you've seen the basic setup, let's try something a little more complex:
 
-* Stop any running Clowder / plugin instances: **. ./stop-clowder.sh**
+* Stop any running Clowder / plugin instances: **. ./stop-clowder.sh -m**
 * Restart Clowder with some extractors: **. ./start-clowder.sh -w image-preview plantcv video-preview**
   * The script should automatically start RabbitMQ for you as well, since you have specified that you would like to utilize extractors.
 * Wait for everything to finish starting everything up (this may take up to ~1 minute)
 * Once Clowder starts, verify that the extractors are present by navigating to **http://YOUR_OPENSTACK_IP:30291/api/status**
   * You should see **rabbitmq: true** listed under the "plugins" section.
   * You should see the extractors you specified listed at the bottom
-* Register for an account as described above.
 * Create a Dataset and upload a file as described above.
-  * Check the log(s) of each extractor and you should see it doing work on the file(s) you chose to upload
+  * View http://CLOWDER_IP/admin/extractions in your browser to verify that the extractors are working.
+  * If anything strange appears on the UI, check the log(s) of each extractor and you should see it doing work on the file(s) you chose to upload
 
 ## Text-Based Search (ElasticSearch)
-* Stop any running Clowder / plugin instances: **. ./stop-clowder.sh**
+* Stop any running Clowder / plugin instances: **. ./stop-clowder.sh -m**
 * Restart Clowder with elasticsearch enabled: **. ./start-clowder.sh elasticsearch**
 * Once Clowder starts, verify that elasticsearch is enabled by navigating to **http://YOUR_OPENSTACK_IP:30291/api/status**
   * You should see **elasticsearch: true** listed under the "plugins" section.
+  * You should see a "Search" box at the top-right of the Clowder UI. This indicates that elasticsearch is enabled.
+* After uploading a file (as described above), attempt to search for the file extensions, such as "jpg" or "png".
+  * You should see the file that you uploaded listed under the results of the search.
