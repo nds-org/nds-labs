@@ -24,12 +24,12 @@ fi
 
 # elasticsearch
 if [ "$ELASTICSEARCH_SERVER" == "" ]; then
-    if [ -n "$ELASTICSEARCH_PORT_9300_TCP_ADDR" ]; then
+    if [ -n "${ELASTICSEARCH_PORT_9300_TCP_ADDR:\"\"}" ]; then
         ELASTICSEARCH_SERVER="$ELASTICSEARCH_PORT_9300_TCP_ADDR"
     fi
 fi
 if [ "$ELASTICSEARCH_PORT" == "" ]; then
-    if [ -n "$ELASTICSEARCH_PORT_9300_TCP_PORT" ]; then
+    if [ -n "${ELASTICSEARCH_PORT_9300_TCP_PORT:\"\"}" ]; then
         ELASTICSEARCH_PORT="$ELASTICSEARCH_PORT_9300_TCP_PORT"
     fi
 fi
