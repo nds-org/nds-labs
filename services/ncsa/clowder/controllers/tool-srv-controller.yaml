@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: terratoolsrv
+  labels:
+    name: terratoolsrv
+spec:
+  replicas: 1
+  selector:
+    name: terratoolsrv
+  template:
+    metadata:
+      labels:
+        name: terratoolsrv
+    spec:
+      containers:
+      - name: terratoolsrv
+        image: ndslabs/terratoolsrv:latest
+        ports:
+        - containerPort: 8080
