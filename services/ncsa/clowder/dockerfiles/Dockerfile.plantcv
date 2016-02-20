@@ -1,4 +1,4 @@
-FROM ncsa/clowder-python-base
+FROM ncsa/clowder-python-base:2.1
 MAINTAINER Yan Y. Liu <yanliu@illinois.edu>
 
 #TODO: change extractor home to plantcv after code merge

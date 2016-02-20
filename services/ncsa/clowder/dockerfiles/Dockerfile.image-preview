@@ -1,5 +1,5 @@
 # FROM clowder/python-base
-FROM ncsa/clowder-python-base
+FROM ncsa/clowder-python-base:2.1
 MAINTAINER Rob Kooper <kooper@illinois.edu>
 
 USER root
