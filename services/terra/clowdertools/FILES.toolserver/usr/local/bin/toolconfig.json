@@ -1,6 +1,6 @@
 [
   {
-    "name": "Jupyter",
+    "toolName": "Jupyter",
     "apiPath": "ipython",
     "description": "Basic Jupyter notebook environment",
     "dockerSrc": "jupyter/scipy-notebook",
@@ -8,7 +8,7 @@
     "mappedPort": "8888/tcp"
   },
   {
-    "name": "RStudio",
+    "toolName": "RStudio",
     "apiPath": "rstudio",
     "description": "RStudio analysis environment",
     "dockerSrc": "rocker/ropensci",

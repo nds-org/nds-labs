@@ -30,13 +30,13 @@ class DockerLog(restful.Resource):
 
 class ToolResource(restful.Resource):
 
-    def __init__(self, config):
-        self.name = config['name']
-        self.apiPath = config['apiPath']
-        self.description = config['description']
-        self.dockerSrc = config['dockerSrc']
-        self.dataPath = config['dataPath']
-        self.mappedPort = config['mappedPort']
+    def __init__(self, toolName, apiPath, description, dockerSrc, dataPath, mappedPort):
+        self.name = str(toolName)
+        self.apiPath = str(apiPath)
+        self.description = str(description)
+        self.dockerSrc = str(dockerSrc)
+        self.dataPath = str(dataPath)
+        self.mappedPort = str(mappedPort)
 
     def get(self):
         return {}
@@ -54,7 +54,7 @@ class ToolResource(restful.Resource):
         args = post_parser.parse_args()
 
         # Create the tool container
-        toolCmd = "/usr/bin/docker create -P -v "+self.dataPath+" "+self.dockerSrc
+        toolCmd = "/usr/bin/docker create -P -v "+self.dataPath+"/data "+self.dockerSrc
         containerID = os.popen(toolCmd).read().rstrip()
         print "CONTAINER ID: ", containerID
 
@@ -95,7 +95,7 @@ Get configured tools from config file
     Should be a list of definition objects like so:
     [
         {
-            "name"          Human-readable name of the tool, e.g. to display in selection menus.
+            "toolName"      Human-readable name of the tool, e.g. to display in selection menus.
             "api_path"      Tool will be accessed via <server ip>:<port>/tools/<api_path>
             "description"   Brief description of tool for users.
             "docker_src"    Container source on dockerhub.
@@ -106,13 +106,15 @@ Get configured tools from config file
         {...}
     ]
 """
-confFile = open("toolconfig.json")
+confFile = open("/usr/local/bin/toolconfig.json")
 jsonConfig = json.load(confFile)
 confFile.close()
 
 # Define endpoints
 for conf in jsonConfig:
-    api.add_resource(ToolResource, '/tools/'+conf['apiPath'], conf)
+    print(conf)
+    subClass = type(str(conf['apiPath']), (ToolResource,), {})
+    api.add_resource(subClass, '/tools/'+str(conf['apiPath']), resource_class_kwargs=conf)
 api.add_resource(DockerLog, '/logs')
 
 if __name__ == '__main__':
