@@ -5,6 +5,6 @@ RUN apt-get -y update \
     && apt-get clean all \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     ;
-COPY FILES.terratoolsrv /
+COPY FILES.toolserver /
 CMD /usr/local/bin/usage
 

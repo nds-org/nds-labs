@@ -24,7 +24,7 @@ put_parser.add_argument('key') # Clowder key
 class DockerLog(restful.Resource):
 
     def get(self):
-        cmd = '/usr/bin/docker logs terratoolsrv'
+        cmd = '/usr/bin/docker logs toolserver'
         logtext = os.popen(cmd).read().rstrip()
         return logtext, 201
 
@@ -58,9 +58,8 @@ class ToolResource(restful.Resource):
         containerID = os.popen(toolCmd).read().rstrip()
         print "CONTAINER ID: ", containerID
 
-
         # Do data transfer container in another container
-        xferCmd = '/usr/bin/docker run --rm -i --volumes-from '+containerID+' maxzilla2/terratoolsrv /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['key'])+' '+self.dataPath
+        xferCmd = '/usr/bin/docker run --rm -i --volumes-from '+containerID+' maxzilla2/toolserver:develop /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['key'])+' '+self.dataPath
         dataContainer = os.popen(xferCmd).read().rstrip()
         print "TRANSFER CONTAINER: ", dataContainer
 
@@ -85,7 +84,7 @@ class ToolResource(restful.Resource):
         args = put_parser.parse_args()
 
         # Do data transfer container in another container
-        xferCmd = '/usr/bin/docker run --rm -i --volumes-from '+str(args['id'])+' maxzilla2/terratoolsrv /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['key'])+' '+self.dataPath
+        xferCmd = '/usr/bin/docker run --rm -i --volumes-from '+str(args['id'])+' maxzilla2/toolserver:develop /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['key'])+' '+self.dataPath
         dataContainer = os.popen(xferCmd).read().rstrip()
         print "TRANSFER CONTAINER: ", dataContainer
 
