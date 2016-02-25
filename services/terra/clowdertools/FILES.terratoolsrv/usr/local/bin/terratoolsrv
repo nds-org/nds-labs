@@ -15,6 +15,9 @@ parser.add_argument('user')
 parser.add_argument('pw')
 parser.add_argument('host')
 
+del_parser = reqparse.RequestParser()
+del_parser.add_argument('id')
+
 class DockerLog(restful.Resource):
     def get(self):
         cmd = '/usr/bin/docker logs terratoolsrv'
@@ -26,9 +29,12 @@ class IpyClowder(restful.Resource):
     def get(self, id):
         return {'hello': 'world'}
 
-    def delete(self, id):
-        print "DEL: ", id
-        cmd = 'docker rm -f -v '+id
+    def delete(self):
+        args = del_parser.parse_args()
+        print "ARGS: ", args
+
+        print "DEL: ", str(args['id'])
+        cmd = 'docker rm -f -v '+str(args['id'])
         res = os.popen(cmd).read().rstrip()
         print "DEL: "+cmd+" returns: ", res
         return '', 204
@@ -49,7 +55,7 @@ class IpyClowder(restful.Resource):
         #
         # Do data xfer container in another container
         #
-        cmd = '/usr/bin/docker run --rm -i --volumes-from '+toolContainer+' terratoolsrv /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['user'])+' '+str(args['pw'])
+        cmd = '/usr/bin/docker run --rm -i --volumes-from '+toolContainer+' maxzilla2/terratoolsrv /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['user'])+' '+str(args['pw']+' '+"jovyan/work")
         print cmd
         dataContainer = os.popen(cmd).read().rstrip()
         print "DC: ", dataContainer
@@ -79,7 +85,68 @@ class IpyClowder(restful.Resource):
         print ret
         return ret, 201
 
+class RStudio(restful.Resource):
+    def get(self, id):
+        return {'hello': 'world'}
+
+    def delete(self):
+        args = del_parser.parse_args()
+        print "ARGS: ", args
+
+        print "DEL: ", str(args['id'])
+        cmd = 'docker rm -f -v '+str(args['id'])
+        res = os.popen(cmd).read().rstrip()
+        print "DEL: "+cmd+" returns: ", res
+        return '', 204
+
+    def post(self):
+        args = parser.parse_args()
+        print "ARGS: ", args
+
+        #
+        # Tool container, create it
+        #
+        toolCmd = "/usr/bin/docker create -P -v /home/rstudio/data rocker/ropensci"
+        print "toolCmd: ", toolCmd
+        toolContainer = os.popen(toolCmd).read().rstrip()
+        print "toolContainer: ", toolContainer
+
+
+        #
+        # Do data xfer container in another container
+        #
+        cmd = '/usr/bin/docker run --rm -i --volumes-from '+toolContainer+' maxzilla2/terratoolsrv /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['user'])+' '+str(args['pw']+' '+"rstudio")
+        print cmd
+        dataContainer = os.popen(cmd).read().rstrip()
+        print "DC: ", dataContainer
+
+        #
+        # Start the tool
+        #
+        cmd = '/usr/bin/docker start '+toolContainer
+        print cmd
+        dataContainer = os.popen(cmd).read().rstrip()
+        print "TOOL ID: " + dataContainer
+
+        #
+        # Get the port of the jupyter
+        #
+        portcmd = "/usr/bin/docker inspect --format '{{(index (index .NetworkSettings.Ports \"8787/tcp\") 0).HostPort}}' " + toolContainer
+        print "PCMD:", portcmd
+        port = os.popen(portcmd).read().rstrip()
+        print 'on port ' + port
+
+        #
+        # return URL and ID
+        #
+        ret = {}
+        ret['id'] = toolContainer
+        ret['URL'] = args['host']+":"+port
+        print ret
+        return ret, 201
+
 api.add_resource(IpyClowder, '/tools/docker/ipython')
+api.add_resource(RStudio, '/tools/docker/rstudio')
 api.add_resource(DockerLog, '/logs')
 
 if __name__ == '__main__':

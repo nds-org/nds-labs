@@ -2,6 +2,7 @@
 
 echo $*
 
-echo curl --connect-timeout 10 --user "${2}:${3}" -o /home/jovyan/work/data/dataset.zip $1 
-curl --connect-timeout 10 --user "${2}:${3}" -o /home/jovyan/work/data/dataset.zip $1 > /home/jovyan/work/data/xfer-out 2>&1
-chown -R 1000:100 /home/jovyan
+echo curl --connect-timeout 10 --user "${2}:${3}" -o /home/$4/data/dataset.zip $1
+curl --connect-timeout 10 --user "${2}:${3}" -o /home/$4/data/dataset.zip $1 > /home/$4/data/xfer-out 2>&1
+chown -R 1000:100 /home/jovyan || chown -R 1000:100 /home/rstudio
+unzip /home/$4/data/dataset.zip -d /home/$4/data
