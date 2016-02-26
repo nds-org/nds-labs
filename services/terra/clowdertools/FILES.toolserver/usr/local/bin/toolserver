@@ -21,6 +21,10 @@ put_parser.add_argument('id') # toolContainer ID
 put_parser.add_argument('dataset') # Clowder download path e.g. "http://0.0.0.0:9000/clowder/api/datasets/<ds_id>/download"
 put_parser.add_argument('key') # Clowder key
 
+
+#
+# Allow remote user to get contents of toolserver logs
+#
 class DockerLog(restful.Resource):
 
     def get(self):
@@ -28,6 +32,24 @@ class DockerLog(restful.Resource):
         logtext = os.popen(cmd).read().rstrip()
         return logtext, 201
 
+#
+# Get list of eligible tool endpoints to call with /tools/<endpoint>
+#
+class ToolIndex(restful.Resource):
+
+    def get(self):
+        tools = {}
+        for n in config.keys():
+            tools[n] = {
+                "name": config[n]["toolName"],
+                "description": config[n]["description"]
+            }
+
+        return tools, 201
+
+#
+# Main class for tools, pulling necessary config vars from toolconfig.json
+#
 class ToolResource(restful.Resource):
 
     def get(self, toolName):
@@ -40,7 +62,7 @@ class ToolResource(restful.Resource):
         cmd = 'docker rm -f -v '+str(args['id'])
         res = os.popen(cmd).read().rstrip()
         print "DELETING "+cmd+" RETURNS: ", res
-        return 'OK', 204
+        return 204
 
     def post(self, toolName):
         args = post_parser.parse_args()
@@ -80,7 +102,7 @@ class ToolResource(restful.Resource):
         dataContainer = os.popen(xferCmd).read().rstrip()
         print "TRANSFER CONTAINER: ", dataContainer
 
-        return '', 201
+        return 204
 
 """
 Get configured tools from config file
@@ -102,6 +124,7 @@ config = json.load(confFile)
 confFile.close()
 
 # Define endpoints
+api.add_resource(ToolIndex, '/tools/list')
 api.add_resource(ToolResource, '/tools/<string:toolName>')
 api.add_resource(DockerLog, '/logs')
 
