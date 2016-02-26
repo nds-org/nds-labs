@@ -30,18 +30,10 @@ class DockerLog(restful.Resource):
 
 class ToolResource(restful.Resource):
 
-    def __init__(self, toolName, apiPath, description, dockerSrc, dataPath, mappedPort):
-        self.name = str(toolName)
-        self.apiPath = str(apiPath)
-        self.description = str(description)
-        self.dockerSrc = str(dockerSrc)
-        self.dataPath = str(dataPath)
-        self.mappedPort = str(mappedPort)
-
-    def get(self):
+    def get(self, toolName):
         return {}
 
-    def delete(self):
+    def delete(self, toolName):
         args = del_parser.parse_args()
 
         # Remove container
@@ -50,16 +42,16 @@ class ToolResource(restful.Resource):
         print "DELETING "+cmd+" RETURNS: ", res
         return 'OK', 204
 
-    def post(self):
+    def post(self, toolName):
         args = post_parser.parse_args()
 
         # Create the tool container
-        toolCmd = "/usr/bin/docker create -P -v "+self.dataPath+"/data "+self.dockerSrc
+        toolCmd = "/usr/bin/docker create -P -v "+config[toolName]['dataPath']+"/data "+config[toolName]['dockerSrc']
         containerID = os.popen(toolCmd).read().rstrip()
         print "CONTAINER ID: ", containerID
 
         # Do data transfer container in another container
-        xferCmd = '/usr/bin/docker run --rm -i --volumes-from '+containerID+' maxzilla2/toolserver:develop /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['key'])+' '+self.dataPath
+        xferCmd = '/usr/bin/docker run --rm -i --volumes-from '+containerID+' maxzilla2/toolserver:develop /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['key'])+' '+config[toolName]['dataPath']
         dataContainer = os.popen(xferCmd).read().rstrip()
         print "TRANSFER CONTAINER: ", dataContainer
 
@@ -69,7 +61,7 @@ class ToolResource(restful.Resource):
         print "TOOL ID: " + dataContainer
 
         # Get and remap port for tool
-        portCmd = "/usr/bin/docker inspect --format '{{(index (index .NetworkSettings.Ports \""+self.mappedPort+"\") 0).HostPort}}' "+containerID
+        portCmd = "/usr/bin/docker inspect --format '{{(index (index .NetworkSettings.Ports \""+config[toolName]['mappedPort']+"\") 0).HostPort}}' "+containerID
         port = os.popen(portCmd).read().rstrip()
         print 'ON PORT ' + port
 
@@ -80,11 +72,11 @@ class ToolResource(restful.Resource):
         }
         return ret, 201
 
-    def put(self):
+    def put(self, toolName):
         args = put_parser.parse_args()
 
         # Do data transfer container in another container
-        xferCmd = '/usr/bin/docker run --rm -i --volumes-from '+str(args['id'])+' maxzilla2/toolserver:develop /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['key'])+' '+self.dataPath
+        xferCmd = '/usr/bin/docker run --rm -i --volumes-from '+str(args['id'])+' maxzilla2/toolserver:develop /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['key'])+' '+config[toolName]['dataPath']
         dataContainer = os.popen(xferCmd).read().rstrip()
         print "TRANSFER CONTAINER: ", dataContainer
 
@@ -94,27 +86,23 @@ class ToolResource(restful.Resource):
 Get configured tools from config file
     Should be a list of definition objects like so:
     [
-        {
+        "apiPath": {
             "toolName"      Human-readable name of the tool, e.g. to display in selection menus.
-            "api_path"      Tool will be accessed via <server ip>:<port>/tools/<api_path>
             "description"   Brief description of tool for users.
-            "docker_src"    Container source on dockerhub.
-            "data_path"     Path where uploaded datasets will be downloaded.
-            "port_remap"    This is used to map ports for containers of this type using docker inspect.
+            "dockerSrc"    Container source on dockerhub.
+            "dataPath"     Path where uploaded datasets will be downloaded.
+            "mappedPort"    This is used to map ports for containers of this type using docker inspect.
         },
         {...},
         {...}
     ]
 """
 confFile = open("/usr/local/bin/toolconfig.json")
-jsonConfig = json.load(confFile)
+config = json.load(confFile)
 confFile.close()
 
 # Define endpoints
-for conf in jsonConfig:
-    print(conf)
-    subClass = type(str(conf['apiPath']), (ToolResource,), {})
-    api.add_resource(subClass, '/tools/'+str(conf['apiPath']), resource_class_kwargs=conf)
+api.add_resource(ToolResource, '/tools/<string:toolName>')
 api.add_resource(DockerLog, '/logs')
 
 if __name__ == '__main__':
