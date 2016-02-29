@@ -1,7 +1,6 @@
 FROM ubuntu
-RUN chmod u+x /usr/local/bin/* \
-    && apt-get -y update \
-    && apt-get -y install curl unzip python python-dev python-pip \
+RUN apt-get -y update \
+    && apt-get -y install curl unzip docker.io python python-dev python-pip \
     && pip install flask-restful \
     && apt-get clean all \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \

@@ -36,7 +36,7 @@ class IpyClowder(restful.Resource):
     def post(self):
         args = parser.parse_args()
         print "ARGS: ", args
-        
+
         #
         # Tool container, create it
         #
@@ -45,10 +45,11 @@ class IpyClowder(restful.Resource):
         toolContainer = os.popen(toolCmd).read().rstrip()
         print "toolContainer: ", toolContainer
 
+
         #
         # Do data xfer container in another container
         #
-        cmd = '/usr/bin/docker run --rm -i --volumes-from '+toolContainer+' terratoolsrv /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['user'])+' '+str(args['pw'])    
+        cmd = '/usr/bin/docker run --rm -i --volumes-from '+toolContainer+' terratoolsrv /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['user'])+' '+str(args['pw'])
         print cmd
         dataContainer = os.popen(cmd).read().rstrip()
         print "DC: ", dataContainer
