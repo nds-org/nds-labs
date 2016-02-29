@@ -36,31 +36,9 @@ class IpyClowder(restful.Resource):
     def post(self):
         args = parser.parse_args()
         print "ARGS: ", args
-
-        
-        
-        #
-        #
-        # Does Jupyter require the data to be populated before it can start?
-        # If not, I feel like this may be a much more simple solution
-        #
-        # Run a jupyter container
-        # cmd = '/usr/bin/kubectl run tool-jupyter --port=8888 --labels=tool=jupyter --image=ndslabs/tool-jupyter --restart=Never'
-        #
-        # Now, populate it with data via clowder-xfer
-        # cmd = '/usr/bin/kubectl exec tool-jupyter -- /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['user'])+' '+str(args['pw'])
-        #
-        # The notebook container should now be running with data... we just need to somehow return its port number
-        #
-        
-        
-        
-        
         
         #
         # Tool container, create it
-        #
-        # toolCmd = '/usr/bin/kubectl create pvc'
         #
         toolCmd = "/usr/bin/docker create -P -v /home/jovyan/work/data jupyter/scipy-notebook"
         print "toolCmd: ", toolCmd
@@ -70,9 +48,6 @@ class IpyClowder(restful.Resource):
         #
         # Do data xfer container in another container
         #
-        # TODO: how do we specify volumes? '--volumes-from '+toolContainer
-        # cmd = '/usr/bin/kubectl run clowder-xfer --restart=Never --image=terratoolsrv --command -- /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['user'])+' '+str(args['pw'])
-        #
         cmd = '/usr/bin/docker run --rm -i --volumes-from '+toolContainer+' terratoolsrv /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['user'])+' '+str(args['pw'])    
         print cmd
         dataContainer = os.popen(cmd).read().rstrip()
@@ -81,8 +56,6 @@ class IpyClowder(restful.Resource):
         #
         # Start the tool
         #
-        # cmd = '/usr/bin/kubectl run --port=8888 --labels=tool=jupyter --image=jupyter/scipy-notebook --restart=Never'
-        #
         cmd = '/usr/bin/docker start '+toolContainer
         print cmd
         dataContainer = os.popen(cmd).read().rstrip()
@@ -90,9 +63,6 @@ class IpyClowder(restful.Resource):
 
         #
         # Get the port of the jupyter
-        #
-        # port = 8888 # TODO: can we reasonably make this assumption?
-        # portcmd = 'kubectl get pods -l tool=jupyter -o json | grep podIP | sed 's/[ \ta-zA-Z",:]//g'
         #
         portcmd = "/usr/bin/docker inspect --format '{{(index (index .NetworkSettings.Ports \"8888/tcp\") 0).HostPort}}' " + toolContainer
         print "PCMD:", portcmd

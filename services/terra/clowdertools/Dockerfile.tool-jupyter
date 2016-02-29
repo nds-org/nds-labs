@@ -1,5 +1,0 @@
-FROM jupyter/scipy-notebook
-
-ENV TOOL_NAME=jupyter
-
-COPY FILES.tools/ /

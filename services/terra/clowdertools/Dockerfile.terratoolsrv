@@ -1,7 +1,4 @@
 FROM ubuntu
-
-ADD https://storage.googleapis.com/kubernetes-release/release/v1.0.3/bin/linux/amd64/kubectl /usr/local/bin/
-
 RUN chmod u+x /usr/local/bin/* \
     && apt-get -y update \
     && apt-get -y install curl unzip python python-dev python-pip \
@@ -9,7 +6,6 @@ RUN chmod u+x /usr/local/bin/* \
     && apt-get clean all \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     ;
-    
 COPY FILES.terratoolsrv /
 CMD /usr/local/bin/usage
 
