@@ -6,9 +6,9 @@ usage-docker() {
 
 usage() {
     echo "This image generates the command to run itself using the following commands:"
-    echo '  docker run --rm -t terratoolsrv usage docker'
+    echo '  docker run --rm -t toolserver usage docker'
     echo '  To deploy in this environment:'
-    echo '      eval $(docker run --rm -it terratoolsrv usage docker)'
+    echo '      eval $(docker run --rm -it toolserver usage docker)'
 
 }
 

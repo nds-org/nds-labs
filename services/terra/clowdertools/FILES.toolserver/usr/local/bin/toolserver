@@ -15,54 +15,54 @@ post_parser = reqparse.RequestParser()
 post_parser.add_argument('dataset') # Clowder download path e.g. "http://0.0.0.0:9000/clowder/api/datasets/<ds_id>/download"
 post_parser.add_argument('key') # Clowder key
 post_parser.add_argument('name') # human-readable name to refer to instance
+post_parser.add_argument('ownerId') # UUID of user in Clowder who is creating this instance
 
 put_parser = reqparse.RequestParser()
 put_parser.add_argument('id') # tool containerID
 put_parser.add_argument('dataset') # Clowder download path e.g. "http://0.0.0.0:9000/clowder/api/datasets/<ds_id>/download"
 put_parser.add_argument('key') # Clowder key
+put_parser.add_argument('uploaderId') # UUID of user in Clowder who is uploading this dataset
 
+# TODO: Move these parameters somewhere else?
 PORTNUM = "8080"
+configPath = "/usr/local/data/toolconfig.json"
+instancesPath = "/usr/local/data/instances.json"
 
-"""
-    Allow remote user to get contents of toolserver logs
-"""
+
+
+"""Allow remote user to get contents of toolserver logs"""
 class DockerLog(restful.Resource):
 
     def get(self):
         cmd = '/usr/bin/docker logs toolserver'
         logtext = os.popen(cmd).read().rstrip()
-        return logtext, 201
+        return logtext, 200
 
-"""
-    Main class for instances of tools
-"""
+"""Main class for instances of tools"""
 class ToolInstance(restful.Resource):
 
     def get(self, toolPath):
         """ Get details of running instance """
-
         args = id_parser.parse_args()
         cfg = config[toolPath]
         containerID = str(args['id'])
 
         if containerID in instanceAttrs:
-            instanceURL = instanceAttrs[containerID]["url"]
-            instanceName = instanceAttrs[containerID]["name"]
+            return {
+                "toolPath": toolPath,
+                "name": instanceAttrs[containerID]["name"],
+                "url": instanceAttrs[containerID]["url"],
+                "created": instanceAttrs[containerID]["created"],
+                "ownerId": instanceAttrs[containerID]["ownerId"],
+                "uploadHistory": instanceAttrs[containerID]["uploadHistory"],
+                "toolName": cfg["toolName"],
+                "description": cfg["description"]
+            }, 200
         else:
-            host = request.url_root[:request.url_root.find(":"+PORTNUM)]
-            portCmd = "/usr/bin/docker inspect --format '{{(index (index .NetworkSettings.Ports \""+cfg['mappedPort']+"\") 0).HostPort}}' "+containerID
-            instanceURL = host+":"+os.popen(portCmd).read().rstrip()
-
-        return {
-            "url": instanceURL,
-            "name": cfg["toolName"],
-            "description": cfg["description"],
-            "api_path": toolPath
-        }, 200
+            return "Container not found", 404
 
     def delete(self, toolPath):
         """ Delete a tool instance """
-
         args = id_parser.parse_args()
         containerID = str(args['id'])
 
@@ -72,11 +72,12 @@ class ToolInstance(restful.Resource):
         # Remove from list
         del instanceAttrs[containerID]
 
-        return 204
+        writeInstanceAttrsToFile()
+
+        return containerID+" removed", 200
 
     def post(self, toolPath):
         """ Create a new instance of requested tool container """
-
         args = post_parser.parse_args()
         cfg = config[toolPath]
         host = request.url_root[:request.url_root.find(":"+PORTNUM)]
@@ -99,12 +100,23 @@ class ToolInstance(restful.Resource):
         port = os.popen(portCmd).read().rstrip()
 
         # Make a record of this container's URL for later reference
+        currTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # TODO: standardize this to GMT or something
         instanceAttrs[containerID] = {
-            "toolType": toolPath,
+            "toolPath": toolPath,
             "name": str(args['name']),
             "url": host+":"+port,
-            "created": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "created": currTime,
+            "ownerId": str(args['ownerId']),
+            "uploadHistory": [{
+                "url":str(args['dataset']),
+                "time": currTime,
+                "uploaderId": str(args['ownerId'])
+            }]
         }
+
+        writeInstanceAttrsToFile()
+
+        # TODO: initial notebook has code or script or help file to assist in transfer of files back to clowder
 
         return {
            'id': containerID,
@@ -113,18 +125,24 @@ class ToolInstance(restful.Resource):
 
     def put(self, toolPath):
         """ Download another dataset into container """
-
         args = put_parser.parse_args()
+        containerID = str(args['id'])
 
         # Do data transfer container in another container
         xferCmd = '/usr/bin/docker run --rm -i --volumes-from '+str(args['id'])+' maxzilla2/toolserver:develop /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['key'])+' '+config[toolPath]['dataPath']
         os.popen(xferCmd).read().rstrip()
 
+        instanceAttrs[containerID]["uploadHistory"].append({
+            "url": str(args["dataset"]),
+            "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # TODO: standardize this to GMT or something
+            "uploaderId": str(args['uploaderId'])
+        })
+
+        writeInstanceAttrsToFile()
+
         return 204
 
-"""
-    Main class for tool definitions, pulling necessary config vars from toolconfig.json
-"""
+"""Main class for tool definitions, pulling necessary config vars from toolconfig.json"""
 class Toolbox(restful.Resource):
 
     def get(self):
@@ -142,75 +160,96 @@ class Toolbox(restful.Resource):
     def delete(self):
         """ Delete tool endpoint from config file """
 
-        return 204
+        return 200
 
     def post(self):
         """ Add new tool endpoint to config file """
 
-        return 204
+        return 201
 
     def put(self):
         """ Update existing tool endpoint in config file """
 
-        return 204
+        return 200
 
-"""
-    Used to fetch entire set of running instances for populating manager list
-"""
+"""Used to fetch entire set of running instances for populating manager list"""
 class Instances(restful.Resource):
 
     def get(self):
-        """ Return list of all running tool instances """
+        """ Return attributes of all running tool instances """
         instances = {}
         for containerID in instanceAttrs:
-            currInst = instanceAttrs[containerID]
-            cfg = config[currInst["toolType"]]
-            instances[containerID] = {
-                "name": currInst["name"],
-                "url": currInst["url"],
-                "toolType": currInst["toolType"],
-                "toolName": cfg["toolName"],
-                "description": cfg["description"],
-                "created": currInst["created"]
-            }
+            instances[containerID] = instanceAttrs[containerID]
+
+            # Add some additional tool info from the config data before returning
+            cfg = config[instances[containerID]["toolPath"]]
+            instances[containerID]["toolName"] = cfg["toolName"]
+            instances[containerID]["description"] = cfg["description"]
 
         return instances, 200
 
-"""
-Get configured tools from config file
-    Should be a list of definition objects like so:
-    [
-        "toolPath": {
-            "toolName"      Human-readable name of the tool, e.g. to display in selection menus.
-            "description"   Brief description of tool for users.
-            "dockerSrc"     Container source on dockerhub.
-            "dataPath"      Path where uploaded datasets will be downloaded.
-            "mappedPort"    This is used to map ports for containers of this type using docker inspect.
-        },
-        {...},
-        {...}
-    ]
-"""
-confFile = open("/usr/local/bin/toolconfig.json")
-config = json.load(confFile)
-confFile.close()
 
 
-"""
-This is used to store mapping of docker container ID to toolType
-If this is erased e.g. in service restart, GET calls by instance id will still return URL.
-{
-    "containerID": {
-        "url"           URL for reaching instance from outside
-        "toolPath"      Reference to which type of tool this instance is (i.e. key in config)
-    }
-}
-"""
-instanceAttrs = {}
+"""Get configured tools from json file"""
+def getConfig(path=configPath):
+    """config file should be a set of definition objects like so:
+        {"toolPath": {
+                "toolName"      Human-readable name of the tool, e.g. to display in selection menus.
+                "description"   Brief description of tool for users.
+                "dockerSrc"     Container source on dockerhub.
+                "dataPath"      Path where uploaded datasets will be downloaded.
+                "mappedPort"    This is used to map ports for containers of this type using docker inspect.
+            },
+            {...},
+            {...}}
+    """
+    confFile = open(path)
+    config = json.load(confFile)
+    confFile.close()
+    return config
+
+"""Get previously written instance attributes from json file, creating file if it doesn't exist"""
+def getInstanceAttrsFromFile(path=instancesPath):
+    """instances file stores attributes of running instances so metadata is available after service restart:
+        {"containerID": {
+                "toolPath"      Reference to which type of tool this instance is (i.e. key in config)
+                "name"          Human-readable name to be displayed in Clowder user interface
+                "url"           URL for reaching instance from outside
+                "created"       Timestamp when container was created
+                "ownerId"       UUID of owner in Clowder,
+                "uploadHistory" List of objects tracking {url, time, uploaderId} for each file uploaded to instance
+            },
+            {...},
+            {...}}
+    """
+    if not os.path.exists(path):
+        # Create an empty file if it doesn't exist already
+        instFile = open(path, 'w')
+        instFile.write("{}")
+        instFile.close()
+
+    instFile = open(path)
+    attrs = json.load(instFile)
+    instFile.close()
+    return attrs
+
+"""Write current instanceAttrs object to file"""
+def writeInstanceAttrsToFile(path=instancesPath):
+    # We don't care what the current contents are; they should either already be loaded or are outdated. Overwrite 'em.
+    instFile = open(path, 'w')
+    instFile.write(json.dumps(instanceAttrs))
+    instFile.close()
+
+
+
+# Initialize tool configuration and load any instance data from previous runs
+config = getConfig()
+instanceAttrs = getInstanceAttrsFromFile()
 
 # Define endpoints
 api.add_resource(Toolbox, '/tools')
-api.add_resource(ToolInstance, '/tools/<string:toolPath>')
+api.add_resource(Toolbox, '/tools/<string:toolPath>') # Get full details of this tool including docker container, etc.
+api.add_resource(ToolInstance, '/instances/<string:toolPath>')
 api.add_resource(Instances, '/instances')
 api.add_resource(DockerLog, '/logs')
 
