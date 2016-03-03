@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
-import os, json, datetime
+import os, json
+import arrow
 from flask import Flask, request
 from flask.ext import restful
 from flask_restful import reqparse, abort, Api, Resource
@@ -12,14 +13,18 @@ id_parser = reqparse.RequestParser()
 id_parser.add_argument('id')
 
 post_parser = reqparse.RequestParser()
+post_parser.add_argument('name') # human-readable name to refer to instance for displaying running list
 post_parser.add_argument('dataset') # Clowder download path e.g. "http://0.0.0.0:9000/clowder/api/datasets/<ds_id>/download"
+post_parser.add_argument('datasetId') # Clowder dataset Id separate from full path, for generating upload history
+post_parser.add_argument('datasetName') # Clowder dataset name for generating upload history
 post_parser.add_argument('key') # Clowder key
-post_parser.add_argument('name') # human-readable name to refer to instance
 post_parser.add_argument('ownerId') # UUID of user in Clowder who is creating this instance
 
 put_parser = reqparse.RequestParser()
-put_parser.add_argument('id') # tool containerID
+put_parser.add_argument('id') # tool containerID to upload dataset into
 put_parser.add_argument('dataset') # Clowder download path e.g. "http://0.0.0.0:9000/clowder/api/datasets/<ds_id>/download"
+put_parser.add_argument('datasetId') # Clowder dataset Id separate from full path, for generating upload history
+put_parser.add_argument('datasetName') # Clowder dataset name for generating upload history
 put_parser.add_argument('key') # Clowder key
 put_parser.add_argument('uploaderId') # UUID of user in Clowder who is uploading this dataset
 
@@ -100,7 +105,7 @@ class ToolInstance(restful.Resource):
         port = os.popen(portCmd).read().rstrip()
 
         # Make a record of this container's URL for later reference
-        currTime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") # TODO: standardize this to GMT or something
+        currTime = arrow.now().isoformat()
         instanceAttrs[containerID] = {
             "toolPath": toolPath,
             "name": str(args['name']),
@@ -110,7 +115,9 @@ class ToolInstance(restful.Resource):
             "uploadHistory": [{
                 "url":str(args['dataset']),
                 "time": currTime,
-                "uploaderId": str(args['ownerId'])
+                "uploaderId": str(args['ownerId']),
+                "datasetName": str(args['datasetName']),
+                "datasetId": str(args['datasetId'])
             }]
         }
 
@@ -132,10 +139,13 @@ class ToolInstance(restful.Resource):
         xferCmd = '/usr/bin/docker run --rm -i --volumes-from '+str(args['id'])+' maxzilla2/toolserver:develop /usr/local/bin/clowder-xfer '+str(args['dataset'])+' '+str(args['key'])+' '+config[toolPath]['dataPath']
         os.popen(xferCmd).read().rstrip()
 
+
         instanceAttrs[containerID]["uploadHistory"].append({
             "url": str(args["dataset"]),
-            "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), # TODO: standardize this to GMT or something
-            "uploaderId": str(args['uploaderId'])
+            "time": arrow.now().isoformat(),
+            "uploaderId": str(args['uploaderId']),
+            "datasetName": str(args['datasetName']),
+            "datasetId": str(args['datasetId'])
         })
 
         writeInstanceAttrsToFile()
@@ -146,7 +156,7 @@ class ToolInstance(restful.Resource):
 class Toolbox(restful.Resource):
 
     def get(self):
-        """ Get a list of eligible tool endpoints that can be called """
+        """ Get a list of eligible tool endpoints that can be called. If toolPath given, return details of specific tool """
 
         tools = {}
         for toolPath in config.keys():
@@ -155,7 +165,7 @@ class Toolbox(restful.Resource):
                 "description": config[toolPath]["description"]
             }
 
-        return tools, 201
+        return tools, 200
 
     def delete(self):
         """ Delete tool endpoint from config file """
@@ -217,7 +227,7 @@ def getInstanceAttrsFromFile(path=instancesPath):
                 "url"           URL for reaching instance from outside
                 "created"       Timestamp when container was created
                 "ownerId"       UUID of owner in Clowder,
-                "uploadHistory" List of objects tracking {url, time, uploaderId} for each file uploaded to instance
+                "uploadHistory" List of objects tracking {url, time, uploaderId, datasetName, datasetId} for each file uploaded to instance
             },
             {...},
             {...}}
@@ -228,6 +238,7 @@ def getInstanceAttrsFromFile(path=instancesPath):
         instFile.write("{}")
         instFile.close()
 
+    # TODO: remove entries from this object if there are no matching docker containers
     instFile = open(path)
     attrs = json.load(instFile)
     instFile.close()
@@ -246,12 +257,19 @@ def writeInstanceAttrsToFile(path=instancesPath):
 config = getConfig()
 instanceAttrs = getInstanceAttrsFromFile()
 
-# Define endpoints
-api.add_resource(Toolbox, '/tools')
-api.add_resource(Toolbox, '/tools/<string:toolPath>') # Get full details of this tool including docker container, etc.
-api.add_resource(ToolInstance, '/instances/<string:toolPath>')
+# ENDPOINTS ----------------
+# /tools will fetch summary of available tools that can be launched
+api.add_resource(Toolbox, '/tools') # TODO: Allo /tools/<toolPath> to get more details about specific tool
+
+# /instances will fetch the list of instances that are running on the server
 api.add_resource(Instances, '/instances')
+
+# /instances/toolPath fetches details of a particular instance, including URL, owner, history, etc.
+api.add_resource(ToolInstance, '/instances/<string:toolPath>')
+
+# /logs should return docker logs for the requested toolPath TODO: remove?
 api.add_resource(DockerLog, '/logs')
+# ----------------------------
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=int(PORTNUM), debug=True)
