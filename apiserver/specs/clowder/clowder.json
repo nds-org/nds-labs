@@ -1,0 +1,34 @@
+{
+    "depends": [
+        {
+            "key": "mongo",
+            "required": true
+        },
+        {
+            "key": "imagepreview",
+            "required": false
+        },
+        {
+            "key": "elasticsearch",
+            "required": false
+        }
+    ],
+    "config":  {
+       "SMTP_HOST": "smtp.ncsa.illinois.edu",
+       "ELASTICSEARCH_CLUSTERNAME": "clowder",
+       "RABBITMQ_EXCHANGE": "clowder",
+       "TOOLMGR_URI": "http://141.142.209.108:8080"
+    },
+    "image": "ndslabs/clowder:terra",
+    "isStack": true,
+    "isService": true,
+    "key": "clowder",
+    "label": "Clowder",
+	"isPublic": true,
+    "ports": [
+        {
+            "port": 9000,
+            "protocol": "TCP"
+        }
+    ]
+}
