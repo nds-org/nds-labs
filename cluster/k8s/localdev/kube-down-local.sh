@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 array=( `docker ps | grep gcr | awk '{print $1}'` )
 

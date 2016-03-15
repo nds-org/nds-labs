@@ -1,35 +1,25 @@
 apiVersion: v1
 kind: ReplicationController
 metadata:
-  name: clowder-plantcv
+  name: plantcv
   labels:
-    name: clowder-plantcv
+    name: plantcv
 spec:
   replicas: 1
   selector:
-    name: clowder-plantcv
+    name: plantcv
   template:
     metadata:
       labels:
-        name: clowder-plantcv
+        name: plantcv
     spec:
       containers:
-      - name: clowder-plantcv
-        image: clowder/plantcv
+      - name: plantcv
+        image: ndslabs/plantcv:0.9.1
         env:
-        - name: RABBITMQ_URI
-          value: "amqp://guest:guest@$(CLOWDER_RABBITMQ_PORT_5672_TCP_ADDR):$(CLOWDER_RABBITMQ_PORT_5672_TCP_PORT)/%2F"
         - name: RABBITMQ_EXCHANGE
           value: "clowder"
         - name: RABBITMQ_VHOST
           value: "%2F"
         - name: RABBITMQ_QUEUE
           value: "terra.plantcv"
-        - name: RABBITMQ_PORT_5672_TCP_ADDR
-          value: "$(CLOWDER_RABBITMQ_PORT_5672_TCP_ADDR)"
-        - name: RABBITMQ_PORT_5672_TCP_PORT
-          value: "$(CLOWDER_RABBITMQ_PORT_5672_TCP_PORT)"
-        - name: RABBITMQ_PORT_15672_TCP_ADDR
-          value: "$(CLOWDER_RABBITMQ_PORT_15672_TCP_ADDR)"
-        - name: RABBITMQ_PORT_15672_TCP_PORT
-          value: "$(CLOWDER_RABBITMQ_PORT_15672_TCP_PORT)"

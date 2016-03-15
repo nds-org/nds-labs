@@ -1,6 +1,0 @@
-FROM golang
-
-COPY clowderctl.go /go/src/clowderctl/clowderctl.go
-
-CMD go get clowderctl && go build clowderctl && cp /go/bin/clowderctl /build
-

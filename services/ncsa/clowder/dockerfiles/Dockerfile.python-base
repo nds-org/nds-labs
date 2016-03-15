@@ -1,0 +1,16 @@
+# Ubuntu 14.04 + git + python + pika + requests + pyclowder.
+# Tag: 2.1, update pika from 0.9.13 to 0.10.0.
+FROM ubuntu:14.04
+MAINTAINER Rui Liu <ruiliu@illinois.edu>
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+	git \
+	python \
+	python-pip && \
+	pip install --upgrade pika && \
+	pip install --upgrade requests && \
+	pip install git+https://opensource.ncsa.illinois.edu/stash/scm/cats/pyclowder.git && \
+	adduser --system clowder
+
+USER clowder
+
