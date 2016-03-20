@@ -34,5 +34,7 @@ spec:
         - containerPort: 8080
           protocol: TCP
         env:
-          - name: APISRV_URI
-            value: "http://141.142.209.149:30001"
+          - name: APISERVER_HOST
+            value: "PUBLIC_HOST_IP"
+          - name: APISERVER_PORT
+            value: "30001"
